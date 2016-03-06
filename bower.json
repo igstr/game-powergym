@@ -1,0 +1,24 @@
+{
+  "name": "PowerGym",
+  "description": "The gym simulation game",
+  "main": "index.html",
+  "moduleType": [],
+  "authors": [
+    "Ignas Strimaitis"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.0",
+    "phaser": "^2.4.6"
+  },
+  "devDependencies": {}
+}
