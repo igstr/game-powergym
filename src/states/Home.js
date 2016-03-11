@@ -22,10 +22,10 @@ PowerGym.Home.prototype = {
         col2 = btnImgSize * btnScale + margin;
 
     var grMenuBtns = this.add.group(this.world, 'menuBtns');
-    grMenuBtns.add(this.add.button(col1, row1, "btnLvl1Sheet", this.btnLvl1Callback, this, 1, 0, 2, 0));
-    grMenuBtns.add(this.add.button(col2, row1, "btnLvl2Sheet", this.btnLvl2Callback, this, 1, 0, 2, 0));
-    grMenuBtns.add(this.add.button(col1, row2, "btnLvl3Sheet", this.btnLvl3Callback, this, 1, 0, 2, 0));
-    grMenuBtns.add(this.add.button(col2, row2, "btnLvl4Sheet", this.btnLvl4Callback, this, 1, 0, 2, 0));
+    grMenuBtns.add(this.add.button(col1, row1, "btnLvl1", this.btnLvl1Callback, this, 1, 0, 2, 0));
+    grMenuBtns.add(this.add.button(col2, row1, "btnLvl2", this.btnLvl2Callback, this, 1, 0, 2, 0));
+    grMenuBtns.add(this.add.button(col1, row2, "btnLvl3", this.btnLvl3Callback, this, 1, 0, 2, 0));
+    grMenuBtns.add(this.add.button(col2, row2, "btnLvl4", this.btnLvl4Callback, this, 1, 0, 2, 0));
 
     grMenuBtns.x = this.scale.width - (this.scale.width / 4) - (btnImgSize * btnScale) - margin - 40;
     grMenuBtns.y = this.world.centerY - col2;

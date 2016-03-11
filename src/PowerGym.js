@@ -1,5 +1,10 @@
+
 // Main game namespace
-var PowerGym = {};
+var PowerGym = {
+
+  DEBUG_MODE: true
+
+};
 
 // Prefabs namespace
 PowerGym.Prefabs = {};

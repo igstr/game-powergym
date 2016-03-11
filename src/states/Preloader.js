@@ -32,35 +32,30 @@ PowerGym.Preloader.prototype = {
     //  + lots of other required assets here
 
     // Player
-    this.load.image("playerMainMenu", "assets/sprites/player-main_menu.png");
-    this.load.image("playerHomeHead", "assets/sprites/player-home/head.png");
-    this.load.image("playerHomeLeftArm", "assets/sprites/player-home/left_arm.png");
-    this.load.image("playerHomeLefgLeg", "assets/sprites/player-home/left_leg.png");
-    this.load.image("playerHomeRightArm", "assets/sprites/player-home/right_arm.png");
-    this.load.image("playerHomeRightLeg", "assets/sprites/player-home/right_leg.png");
-    this.load.image("playerHomeShorts", "assets/sprites/player-home/shorts.png");
-    this.load.image("playerHomeTorso", "assets/sprites/player-home/torso.png");
-    // this.load.script("PlayerHome",  "src/prefabs/PlayerHome.js");
+    this.load.image("playerHomeHead", "assets/sprites/home/player/head.png");
+    this.load.image("playerHomeLeftArm", "assets/sprites/home/player/left_arm.png");
+    this.load.image("playerHomeLefgLeg", "assets/sprites/home/player/left_leg.png");
+    this.load.image("playerHomeRightArm", "assets/sprites/home/player/right_arm.png");
+    this.load.image("playerHomeRightLeg", "assets/sprites/home/player/right_leg.png");
+    this.load.image("playerHomeShorts", "assets/sprites/home/player/shorts.png");
+    this.load.image("playerHomeTorso", "assets/sprites/home/player/torso.png");
+
+    this.load.image("playerLvl1Body", "assets/sprites/lvl1/player/body.png");
+    this.load.image("playerLvl1Head", "assets/sprites/lvl1/player/head.png");
+    this.load.spritesheet("playerLvl1Arms", "assets/sprites/lvl1/player/arms400x350.png", 400, 350);
 
     // Buttons
-    this.load.image("btnLvl1", "assets/sprites/btn-lvl1.png");
-    this.load.image("btnLvl2", "assets/sprites/btn-lvl2.png");
-    this.load.image("btnLvl3", "assets/sprites/btn-lvl3.png");
-    this.load.image("btnLvl4", "assets/sprites/btn-lvl4.png");
-    this.load.spritesheet("btnLvl1Sheet", "assets/sprites/btn-lvl1-sheet.png", 100, 100);
-    this.load.spritesheet("btnLvl2Sheet", "assets/sprites/btn-lvl2-sheet.png", 100, 100);
-    this.load.spritesheet("btnLvl3Sheet", "assets/sprites/btn-lvl3-sheet.png", 100, 100);
-    this.load.spritesheet("btnLvl4Sheet", "assets/sprites/btn-lvl4-sheet.png", 100, 100);
-    this.load.image("btnGoBack", "assets/sprites/btn-go_back.png");
-    this.load.image("btnPlay", "assets/sprites/btn-play.png");
+    this.load.spritesheet("btnLvl1", "assets/sprites/buttons/btn-lvl1-sheet.png", 100, 100);
+    this.load.spritesheet("btnLvl2", "assets/sprites/buttons/btn-lvl2-sheet.png", 100, 100);
+    this.load.spritesheet("btnLvl3", "assets/sprites/buttons/btn-lvl3-sheet.png", 100, 100);
+    this.load.spritesheet("btnLvl4", "assets/sprites/buttons/btn-lvl4-sheet.png", 100, 100);
+    this.load.image("btnGoBack", "assets/sprites/buttons/btn-go_back.png");
+    this.load.image("btnPlay", "assets/sprites/buttons/btn-play.png");
 
     // Backgrounds
     this.load.image("bgMainMenu", "assets/sprites/bg-main_menu.png");
-    this.load.image("bgHome", "assets/sprites/bg-home.png");
-    this.load.image("bgLvl1", "assets/sprites/bg-lvl1.png");
-
-    // Scripts
-    // this.load.script("btnMainMenu", "src/prefabs/btnMainMenu.js");
+    this.load.image("bgHome", "assets/sprites/home/bg-home.png");
+    this.load.image("bgLvl1", "assets/sprites/lvl1/bg-lvl1.png");
   },
 
   create: function () {
