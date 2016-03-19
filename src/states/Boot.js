@@ -37,10 +37,17 @@ PowerGym.Boot.prototype = {
     this.state.add("Lvl4", PowerGym.Lvl4);
 
     // Initializing game keys
-    PowerGym.Keys.upKey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
-    PowerGym.Keys.downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-    PowerGym.Keys.leftKey = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-    PowerGym.Keys.rightKey = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    PowerGym.Keys.Up = this.input.keyboard.addKey(Phaser.Keyboard.UP);
+    PowerGym.Keys.Down = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+    PowerGym.Keys.Left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    PowerGym.Keys.Right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+
+    PowerGym.Keys.J = this.input.keyboard.addKey(Phaser.Keyboard.J);
+    PowerGym.Keys.F = this.input.keyboard.addKey(Phaser.Keyboard.F);
+    PowerGym.Keys.D = this.input.keyboard.addKey(Phaser.Keyboard.D);
+    PowerGym.Keys.K = this.input.keyboard.addKey(Phaser.Keyboard.K);
+    PowerGym.Keys.Spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
 
   },
 

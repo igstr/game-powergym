@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>The Game - "PowerGym"</title>
-  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="css/styles.css">
   <script src="bower_components/phaser/build/phaser.min.js"></script>
   <script src="build/powergym.min.js"></script>
 </head>
@@ -16,7 +16,6 @@
 
 <script type="text/javascript">
 window.onload = function() {
-
   var game = new Phaser.Game(800, 600, Phaser.AUTO, "gameContainer", null, false, false);
 
   game.state.add("Boot", PowerGym.Boot);

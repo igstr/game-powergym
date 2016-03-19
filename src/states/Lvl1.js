@@ -5,53 +5,31 @@ PowerGym.Lvl1.prototype = {
 
   create: function() {
 
-    // Enabling Physics
-    // this.physics.startSystem(Phaser.Physics.ARCADE);
+    this.userForce = {x: 0, y: 0};
+    this.isPlaying = false;
+    this.failCounter = 0;
+    this.repsCounter = 0;
+    this.reachedRepBottom = false;
+
+    // Just in case arcade system is not started
+    this.physics.startSystem(Phaser.Physics.ARCADE);
+
+    // BACKGROUND
+    //-------------------
 
     this.add.sprite(0, 0, "bgLvl1");
 
-    // Adding buttons
-    var btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this),
-        btnGoBackMargin = 20;
-    btnGoBack.x = btnGoBackMargin;
-    btnGoBack.y = this.scale.height - btnGoBack.height - btnGoBackMargin;
-
     // PLAYER
-    //////////////////////
+    //-------------------
 
     this.player = new PowerGym.Prefabs.PlayerLvl1(this, 194, 96);
     this.player.balance = 0.5;
-    this.player.pressFrac = 0;
-
+    this.player.pressFrac = 1;
 
     // BALANCE INDICATOR
-    /////////////////////////////////
-
-    // var bmd = this.add.bitmapData(32, 32);
-    // bmd.ctx.beginPath();
-    // bmd.ctx.rect(0, 0, 32, 32);
-    // bmd.ctx.fillStyle = "#fff";
-    // bmd.ctx.fill();
-    // this.balanceIndicator = this.add.sprite(this.world.centerX, 100, bmd);
-    // this.balanceIndicator.anchor.setTo(0.5, 0.5);
-    // this.physics.enable(this.balanceIndicator, Phaser.Physics.ARCADE, true);
-
-    // Background for balance indicator
-
-    // var bgWidth = this.balanceIndicatorAmplitude + 32,
-    //     bgHeight = 32;
-    // var bmdIndicatorBg = this.add.bitmapData(bgWidth, bgHeight);
-    // bmdIndicatorBg.ctx.beginPath();
-    // bmdIndicatorBg.ctx.rect(0, 0, bgWidth, bgHeight);
-    // bmdIndicatorBg.ctx.fillStyle = "#bfbfbf";
-    // bmdIndicatorBg.ctx.fill();
-    // this.balanceIndicatorBg = this.add.sprite(this.world.centerX, 100, bmdIndicatorBg);
-    // this.balanceIndicatorBg.anchor.setTo(0.5, 0.5);
-    // this.world.moveDown(this.balanceIndicatorBg);
-
+    //-------------------
 
     this.balanceIndicatorAmplitude = 200;
-
     var indicatorWidth = 8,
         indicatorHeight = 8,
         indicatorBgWidth = this.balanceIndicatorAmplitude + indicatorWidth;
@@ -73,55 +51,119 @@ PowerGym.Lvl1.prototype = {
     this.balanceIndicator.anchor = {x: 0.5, y: 0.5};
     this.physics.enable(this.balanceIndicator, Phaser.Physics.ARCADE, true);
 
-    this.grBalanceIndicator.x = this.world.centerX - this.grBalanceIndicator.width / 2;
-    this.grBalanceIndicator.y = 100;
+    // Scalling to screen width
+    this.grBalanceIndicator.scale.x = this.scale.width / (this.balanceIndicatorAmplitude + indicatorWidth);
 
     // YOYO
-    ///////////////////
+    //-------------------
+
+    // This thing is needed for unbalancing balance indicator
 
     // Tweening yoyo value from 0 to 1
     this.yoyo = { value: 0 };
     this.add.tween(this.yoyo).to({value: 1}, 2000, null, true, 0, -1, true);
 
-    // INPUT
+    // GUI
+    //-------------------
 
-    PowerGym.Keys.upKey.onDown.add(function() {
-      this.player.pressFrac += 0.2;
-    }, this);
+    // Reps counter text
+    this.repsCounterText = this.add.bitmapText(this.world.centerX, 80, "carrierCommand", this.repsCounter);
+    this.repsCounterText.anchor.setTo(0.5, 0.5);
 
-    PowerGym.Keys.downKey.onDown.add(function() {
-      this.player.pressFrac -= 0.2;
-    }, this);
+    // Go back button
+    var btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this),
+        btnGoBackMargin = 20;
+    btnGoBack.x = btnGoBackMargin;
+    btnGoBack.y = this.scale.height - btnGoBack.height - btnGoBackMargin;
 
-    // RUNTIME VARS
-    ///////////////////
+    // On screen arrows
+    var onScreenArrowMargin = 5;
+    this.grOnScreenArrows = this.add.group(this.world, "onScreenArrowButtons");
+    this.onScreenArrowDown = this.add.button(0, 0, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrows);
+    this.onScreenArrowDown.anchor.setTo(0.5, 0.5);
+    this.onScreenArrowDown.rotation = -Math.PI / 2;
+    this.onScreenArrowRight = this.add.sprite(this.onScreenArrowDown.width + onScreenArrowMargin, 0, "btnArrow", 0, this.grOnScreenArrows);
+    this.onScreenArrowRight.anchor.setTo(0.5, 0.5);
+    this.onScreenArrowRight.inputEnabled = true;
+    this.onScreenArrowRight.rotation = Math.PI;
+    this.onScreenArrowLeft = this.add.sprite(-this.onScreenArrowDown.width - onScreenArrowMargin, 0, "btnArrow", 0, this.grOnScreenArrows);
+    this.onScreenArrowLeft.anchor.setTo(0.5, 0.5);
+    this.onScreenArrowLeft.inputEnabled = true;
+    this.onScreenArrowUp = this.add.button(0, -this.onScreenArrowDown.width - onScreenArrowMargin, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrows);
+    this.onScreenArrowUp.anchor.setTo(0.5, 0.5);
+    this.onScreenArrowUp.rotation = Math.PI / 2;
 
-    this.userForce = {x: 0, y: 0};
-    this.playing = true;
-    this.failCounter = 0;
-    this.repsCounter = 0;
-    this.reachedRepBottom = false;
+    this.grOnScreenArrows.y = 2 * this.scale.height / 7;
+    this.grOnScreenArrows.x = this.scale.width - this.scale.width / 6;
+
+    // INPUT KEYS
+    //-------------------
+
+    PowerGym.Keys.Up.onDown.add(this.getReady, this);
+    PowerGym.Keys.Down.onDown.add(this.getReady, this);
+    PowerGym.Keys.Left.onDown.add(this.getReady, this);
+    PowerGym.Keys.Right.onDown.add(this.getReady, this);
+
+  },
+
+  getReady: function() {
+
+    if (!this.isPlaying) {
+
+      this.player.getReady();
+
+      PowerGym.Keys.Up.onDown.remove(this.getReady, this);
+      PowerGym.Keys.Down.onDown.remove(this.getReady, this);
+      PowerGym.Keys.Left.onDown.remove(this.getReady, this);
+      PowerGym.Keys.Right.onDown.remove(this.getReady, this);
+
+      this.onScreenArrowDown.onInputUp.remove(this.getReady, this);
+      this.onScreenArrowUp.onInputUp.remove(this.getReady, this);
+    }
 
   },
 
   update: function() {
 
+    // Updating reps counter text
+    this.repsCounterText.text = this.repsCounter;
 
-    if (this.playing) {
+    // Updating on screen arrow states
+    this.manageOnScreenArrowsStates();
 
-      // Catching user input for force
-      if (PowerGym.Keys.rightKey.isDown) {
+    // Wait untill player is ready and add input keys
+    if (!this.isPlaying && this.player.isReady == true) {
+
+      this.isPlaying = true;
+
+      PowerGym.Keys.Up.onDown.add(this.pressUp, this);
+      PowerGym.Keys.Down.onDown.add(this.pressDown, this);
+
+      this.onScreenArrowDown.onInputDown.add(this.pressDown, this);
+      this.onScreenArrowUp.onInputDown.add(this.pressUp, this);
+    }
+
+    if (this.isPlaying) {
+
+      // Catching user input both on screen buttons and keyboard
+      if (PowerGym.Keys.Right.isDown
+          || this.onScreenArrowRight.input.pointerDown(this.input.activePointer.id)
+      ) {
         this.userForce.x += 0.1 + 0.01 * this.repsCounter;
-      } else if (PowerGym.Keys.leftKey.isDown) {
+      } else if (PowerGym.Keys.Left.isDown
+          || this.onScreenArrowLeft.input.pointerDown(this.input.activePointer.id)
+      ) {
         this.userForce.x -= 0.1 + 0.01 * this.repsCounter;
       }
 
       // Adding drag to user force
       this.userForce.x = this.physics.arcade.computeVelocity(0, null, this.userForce.x, 0, 2);
 
-
       // Unbalancing balance indicator
-      this.unbalanceAmplifier = 35 + this.repsCounter * 10 + this.player.pressFrac * 10;
+      this.unbalanceAmplifier = 10 + this.repsCounter * 20;
+      if (this.repsCounter > 0) {
+        this.unbalanceAmplifier += this.player.pressFrac * 10;
+      }
       this.toX = this.yoyo.value * this.unbalanceAmplifier + (this.balanceIndicatorAmplitude - this.unbalanceAmplifier) / 2;
       this.physics.arcade.accelerateToXY(this.balanceIndicator, this.toX, this.balanceIndicator.y);
       this.balanceIndicator.body.velocity.x += this.userForce.x;
@@ -174,6 +216,63 @@ PowerGym.Lvl1.prototype = {
 
   },
 
+  manageOnScreenArrowsStates: function() {
+
+    // Left arrow
+    if (this.onScreenArrowLeft.input.pointerDown(this.input.activePointer.id)) {
+      this.game.canvas.style.cursor = "pointer";
+      this.onScreenArrowLeft.frame = 2;
+    } else if (PowerGym.Keys.Left.isDown) {
+      this.onScreenArrowLeft.frame = 2;
+    } else if (this.onScreenArrowLeft.input.pointerOver(this.input.activePointer.id)) {
+      this.game.canvas.style.cursor = "pointer";
+      this.onScreenArrowLeft.frame = 1;
+    } else if (this.onScreenArrowLeft.input.pointerOut(this.input.activePointer.id)
+        || !PowerGym.Keys.Left.isDown
+    ) {
+      this.onScreenArrowLeft.frame = 0;
+    }
+    if (this.onScreenArrowLeft.input.justOut(this.input.activePointer.id, 50)) {
+        this.game.canvas.style.cursor = "default";
+    }
+
+    // Right arrow
+    if (this.onScreenArrowRight.input.pointerDown(this.input.activePointer.id)) {
+      this.game.canvas.style.cursor = "pointer";
+      this.onScreenArrowRight.frame = 2;
+    } else if (PowerGym.Keys.Right.isDown) {
+      this.onScreenArrowRight.frame = 2;
+    } else if (this.onScreenArrowRight.input.pointerOver(this.input.activePointer.id)) {
+      this.game.canvas.style.cursor = "pointer";
+      this.onScreenArrowRight.frame = 1;
+    } else if (this.onScreenArrowRight.input.pointerOut(this.input.activePointer.id)
+        || !PowerGym.Keys.Right.isDown
+    ) {
+      this.onScreenArrowRight.frame = 0;
+    }
+    if (this.onScreenArrowRight.input.justOut(this.input.activePointer.id, 50)) {
+        this.game.canvas.style.cursor = "default";
+    }
+
+    // Up Arrow
+    if ((PowerGym.Keys.Up.isDown && !PowerGym.Keys.Up.downDuration(100))
+        || PowerGym.Keys.Up.justUp
+    ) {
+      this.onScreenArrowUp.changeStateFrame("Out");
+    } else if (PowerGym.Keys.Up.isDown) {
+      this.onScreenArrowUp.changeStateFrame("Down");
+    }
+
+    // Down Arrow
+    if ((PowerGym.Keys.Down.isDown && !PowerGym.Keys.Down.downDuration(100))
+        || PowerGym.Keys.Down.justUp
+    ) {
+      this.onScreenArrowDown.changeStateFrame("Out");
+    } else if (PowerGym.Keys.Down.isDown) {
+      this.onScreenArrowDown.changeStateFrame("Down");
+    }
+  },
+
   render: function() {
 
     if (PowerGym.DEBUG_MODE) {
@@ -191,8 +290,21 @@ PowerGym.Lvl1.prototype = {
   },
 
   btnGoBackCallback: function() {
-    this.state.start("Home");
-  }
 
+    this.state.start("Home");
+
+  },
+
+  pressUp: function() {
+
+    this.player.pressFrac += 0.2;
+
+  },
+
+  pressDown: function() {
+
+    this.player.pressFrac -= 0.2;
+
+  }
 
 };

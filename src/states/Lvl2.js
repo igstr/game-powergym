@@ -5,31 +5,117 @@ PowerGym.Lvl2.prototype = {
 
   create: function () {
 
-    this.add.sprite(0, 0, "bgMainMenu");
+    this.repsCounter = 0;
+    this.failCounter = 0;
+    this.leftArmReachedRepBottom = true;
+    this.rightArmReachedRepBottom = true;
+
+    // BACKGROUND
+    this.add.sprite(0, 0, "bgLvl2");
+
+    // PLAYER
+    this.player = new PowerGym.Prefabs.PlayerLvl2(this, 314, 150, this.headBangCallback, this);
+
+    // var metronomeOffset = {x: 70, y: 100};
+    // this.leftMetronome = new PowerGym.Prefabs.Metronome(this, this.world.centerX - metronomeOffset.x, this.world.centerY - metronomeOffset.y);
+    // this.leftMetronome.metronome.rotation = -Math.PI / 4;
+    // this.rightMetronome = new PowerGym.Prefabs.Metronome(this, this.world.centerX + metronomeOffset.x, this.world.centerY - metronomeOffset.y);
+    // this.rightMetronome.metronome.rotation = Math.PI / 4;
+
+    // this.metronome = new PowerGym.Prefabs.Metronome(this, this.world.centerX, this.world.centerY - 100, 60);
+
+    // GUI
+    this.repsCounterText = this.add.bitmapText(this.world.centerX, 80, "carrierCommand", this.repsCounter);
+    this.repsCounterText.anchor.setTo(0.5, 0.5);
 
     var btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this),
         margin = 20;
-
     btnGoBack.x = margin;
     btnGoBack.y = this.scale.height - btnGoBack.height - margin;
 
+    // INPUT
+    PowerGym.Keys.Left.onDown.add(this.fKeyCallback, this);
+    PowerGym.Keys.Right.onDown.add(this.jKeyCallback, this);
+    PowerGym.Keys.J.onDown.add(this.jKeyCallback, this);
+    PowerGym.Keys.F.onDown.add(this.fKeyCallback, this);
+
   },
 
-  update: function () { },
+  update: function () {
 
-  quitGame: function(pointer) {
+    // Updating reps counter text
+    this.repsCounterText.text = this.repsCounter;
 
-      //  Here you should destroy anything you no longer need.
-      //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
+    if (PowerGym.Keys.J.isDown || PowerGym.Keys.Right.isDown) {
+      this.jKeyCallback();
+    }
+    if (PowerGym.Keys.F.isDown || PowerGym.Keys.Left.isDown) {
+      this.fKeyCallback();
+    }
 
-      //  Then let's go back to the main menu.
-    this.state.start("MainMenu");
+    // Reps counter
+    if (this.leftArmReachedRepBottom
+        && this.rightArmReachedRepBottom
+        && this.player._leftArm.rotation < -Math.PI / 2
+        && this.player._rightArm.rotation > Math.PI / 2
+    ) {
+      this.leftArmReachedRepBottom = false;
+      this.rightArmReachedRepBottom = false;
+      this.repsCounter++;
+    }
+
+    // Checking if rep bottom reached
+    if (!this.leftArmReachedRepBottom && this.player._leftArm.rotation > 0) {
+      this.leftArmReachedRepBottom = true;
+    }
+    if (!this.rightArmReachedRepBottom && this.player._rightArm.rotation < 0) {
+      this.rightArmReachedRepBottom = true;
+    }
+
+    this.player.update();
+    // this.metronome.update();
+    // this.leftMetronome.update();
+    // this.rightMetronome.update();
+
+  },
+
+  render: function() {
+
+    if (PowerGym.DEBUG_MODE) {
+      this.game.debug.text("leftArm rotation: " + this.player._leftArm.rotation, 8, 16);
+      this.game.debug.text("leftArm angle: " + this.player._leftArm.angle, 8, 32);
+      this.game.debug.text("leftArm angular velocity: " + this.player._leftArm.body.angularVelocity, 8, 48);
+      this.game.debug.text("leftArm angular acceleration: " + this.player._leftArm.body.angularAcceleration, 8, 64);
+      this.game.debug.text("reps: " + this.repsCounter, 8, 80);
+      this.game.debug.text("fails: " + this.failCounter, 8, 96);
+      this.game.debug.text("left arm bottom: " + this.leftArmReachedRepBottom, 8, 112);
+      this.game.debug.text("right arm bottom: " + this.rightArmReachedRepBottom, 8, 128);
+    }
+
+  },
+
+  headBangCallback: function() {
+
+    this.failCounter++;
 
   },
 
   btnGoBackCallback: function() {
-    this.state.start("Home");
-  }
 
+    this.state.start("Home");
+
+  },
+
+  fKeyCallback: function() {
+
+    this.player.rightArmVelocity += 1;
+
+  },
+
+  jKeyCallback: function() {
+
+    this.player.leftArmVelocity -= 1;
+
+  },
 
 };

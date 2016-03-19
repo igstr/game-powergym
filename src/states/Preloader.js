@@ -31,6 +31,10 @@ PowerGym.Preloader.prototype = {
     // this.load.bitmapFont("caslon", "fonts/caslon.png", "fonts/caslon.xml");
     //  + lots of other required assets here
 
+    // Fonts
+
+    this.load.bitmapFont("carrierCommand", "assets/fonts/bitmapFonts/carrier_command.png", "assets/fonts/bitmapFonts/carrier_command.xml");
+
     // Player
     this.load.image("playerHomeHead", "assets/sprites/home/player/head.png");
     this.load.image("playerHomeLeftArm", "assets/sprites/home/player/left_arm.png");
@@ -42,20 +46,43 @@ PowerGym.Preloader.prototype = {
 
     this.load.image("playerLvl1Body", "assets/sprites/lvl1/player/body.png");
     this.load.image("playerLvl1Head", "assets/sprites/lvl1/player/head.png");
-    this.load.spritesheet("playerLvl1Arms", "assets/sprites/lvl1/player/arms400x350.png", 400, 350);
+    this.load.spritesheet("playerLvl1Arms", "assets/sprites/lvl1/player/arms270x375.png", 270, 375);
+    this.load.spritesheet("lvl1Bar0", "assets/sprites/lvl1/bar0_400x350.png", 400, 350);
+    this.load.spritesheet("lvl1Bar1", "assets/sprites/lvl1/bar1_400x350.png", 400, 350);
+    this.load.spritesheet("lvl1Bar2", "assets/sprites/lvl1/bar2_400x350.png", 400, 350);
+
+    this.load.image("playerLvl2Body", "assets/sprites/lvl2/player/body.png");
+    this.load.image("playerLvl2Head", "assets/sprites/lvl2/player/head.png");
+    this.load.physics("playerLvl2HeadPhysics", "assets/sprites/lvl2/player/head.json");
+    this.load.image("playerLvl2LeftArm", "assets/sprites/lvl2/player/left-arm.png");
+    this.load.physics("playerLvl2LeftArmPhysics", "assets/sprites/lvl2/player/left-arm.json");
+    this.load.image("playerLvl2RightArm", "assets/sprites/lvl2/player/right-arm.png");
+    this.load.physics("playerLvl2RightArmPhysics", "assets/sprites/lvl2/player/right-arm.json");
+
+    // Icons
+    this.load.image("whiteArrow", "assets/sprites/arrow.png");
 
     // Buttons
-    this.load.spritesheet("btnLvl1", "assets/sprites/buttons/btn-lvl1-sheet.png", 100, 100);
-    this.load.spritesheet("btnLvl2", "assets/sprites/buttons/btn-lvl2-sheet.png", 100, 100);
-    this.load.spritesheet("btnLvl3", "assets/sprites/buttons/btn-lvl3-sheet.png", 100, 100);
-    this.load.spritesheet("btnLvl4", "assets/sprites/buttons/btn-lvl4-sheet.png", 100, 100);
-    this.load.image("btnGoBack", "assets/sprites/buttons/btn-go_back.png");
-    this.load.image("btnPlay", "assets/sprites/buttons/btn-play.png");
+    this.load.spritesheet("btnLvl1", "assets/buttons/btn-lvl1_100x100.png", 100, 100);
+    this.load.spritesheet("btnLvl2", "assets/buttons/btn-lvl2_100x100.png", 100, 100);
+    this.load.spritesheet("btnLvl3", "assets/buttons/btn-lvl3_100x100.png", 100, 100);
+    this.load.spritesheet("btnLvl4", "assets/buttons/btn-lvl4_100x100.png", 100, 100);
+    this.load.spritesheet("btnArrow", "assets/buttons/btn-arrow45x45.png", 45, 45);
+    this.load.image("btnGoBack", "assets/buttons/btn-go_back.png");
+    this.load.image("btnPlay", "assets/buttons/btn-play.png");
+
+    // Menus
+    this.load.image("menuLvlOptionsBg", "assets/menus/lvl_options/bg.png");
+    this.load.spritesheet("menuLvlOptionsLvl1Weights", "assets/menus/lvl_options/weights165x120.png", 165, 120);
+    this.load.spritesheet("btnMenuLvlOptionsArrow", "assets/menus/lvl_options/btn-arrow55x120.png", 55, 120);
+    this.load.spritesheet("btnCancel", "assets/menus/lvl_options/btn-cancel110x85.png", 110, 85);
+    this.load.spritesheet("btnOk", "assets/menus/lvl_options/btn-ok110x85.png", 110, 85);
 
     // Backgrounds
     this.load.image("bgMainMenu", "assets/sprites/bg-main_menu.png");
-    this.load.image("bgHome", "assets/sprites/home/bg-home.png");
-    this.load.image("bgLvl1", "assets/sprites/lvl1/bg-lvl1.png");
+    this.load.image("bgHome", "assets/sprites/home/bg.png");
+    this.load.image("bgLvl1", "assets/sprites/lvl1/bg.png");
+    this.load.image("bgLvl2", "assets/sprites/lvl2/bg.png");
   },
 
   create: function () {

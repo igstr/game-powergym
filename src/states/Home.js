@@ -21,24 +21,24 @@ PowerGym.Home.prototype = {
         col1 = 0,
         col2 = btnImgSize * btnScale + margin;
 
-    var grMenuBtns = this.add.group(this.world, 'menuBtns');
-    grMenuBtns.add(this.add.button(col1, row1, "btnLvl1", this.btnLvl1Callback, this, 1, 0, 2, 0));
-    grMenuBtns.add(this.add.button(col2, row1, "btnLvl2", this.btnLvl2Callback, this, 1, 0, 2, 0));
-    grMenuBtns.add(this.add.button(col1, row2, "btnLvl3", this.btnLvl3Callback, this, 1, 0, 2, 0));
-    grMenuBtns.add(this.add.button(col2, row2, "btnLvl4", this.btnLvl4Callback, this, 1, 0, 2, 0));
+    this.grLvlBtns = this.add.group(this.world, 'menuBtns');
+    this.grLvlBtns.add(this.add.button(col1, row1, "btnLvl1", this.btnLvl1Callback, this, 1, 0, 2, 0));
+    this.grLvlBtns.add(this.add.button(col2, row1, "btnLvl2", this.btnLvl2Callback, this, 1, 0, 2, 0));
+    this.grLvlBtns.add(this.add.button(col1, row2, "btnLvl3", this.btnLvl3Callback, this, 1, 0, 2, 0));
+    this.grLvlBtns.add(this.add.button(col2, row2, "btnLvl4", this.btnLvl4Callback, this, 1, 0, 2, 0));
 
-    grMenuBtns.x = this.scale.width - (this.scale.width / 4) - (btnImgSize * btnScale) - margin - 40;
-    grMenuBtns.y = this.world.centerY - col2;
+    this.grLvlBtns.x = this.scale.width - (this.scale.width / 4) - (btnImgSize * btnScale) - margin - 40;
+    this.grLvlBtns.y = this.world.centerY - col2;
 
-    grMenuBtns.forEach(function(item) {
+    this.grLvlBtns.forEach(function(item) {
       item.scale.setTo(btnScale, btnScale);
       PowerGym.Mixins.withFloatAnim.call(item);
       item.startFloat();
     });
 
     // Input
-    PowerGym.Keys.upKey.onDown.add(this.player.scaleEverythingUp, this.player);
-    PowerGym.Keys.downKey.onDown.add(this.player.scaleEverythingDown, this.player);
+    PowerGym.Keys.Up.onDown.add(this.player.scaleEverythingUp, this.player);
+    PowerGym.Keys.Down.onDown.add(this.player.scaleEverythingDown, this.player);
 
   },
 
@@ -50,28 +50,57 @@ PowerGym.Home.prototype = {
 
   quitGame: function(pointer) {
 
-    //  Here you should destroy anything you no longer need.
-    //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
-
     //  Then let's go back to the main menu.
     this.state.start("MainMenu");
 
   },
 
+  disableMenuLvlOptions: function() {
+
+    this.menuLvlOptions.destroy();
+    this.enableLvlButtons();
+
+  },
+
   btnLvl1Callback: function() {
-    this.state.start("Lvl1");
+
+    this.disableLvlButtons();
+    this.menuLvlOptions = new PowerGym.Prefabs.MenuLvlOptions(this, 1, function() {
+
+      this.state.start("Lvl1");
+
+    }, this.disableMenuLvlOptions);
+
   },
 
   btnLvl2Callback: function() {
+
     this.state.start("Lvl2");
+
   },
 
   btnLvl3Callback: function() {
+
     this.state.start("Lvl3");
+
   },
 
   btnLvl4Callback: function() {
+
     this.state.start("Lvl4");
+
+  },
+
+  disableLvlButtons: function() {
+
+    this.grLvlBtns.visible = false;
+
+  },
+
+  enableLvlButtons: function() {
+
+    this.grLvlBtns.visible = true;
+
   }
 
 };
