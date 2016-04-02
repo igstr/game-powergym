@@ -1,0 +1,204 @@
+
+PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) {
+
+  this.game = game;
+  this.maxPoints = maxPoints;
+
+  var textSize = 16,
+      textScaleX = 0.9;
+
+  if (!params) {
+    this.params = [
+      {
+        name: "Reps",
+        amount: 12,
+        multiplier: 3
+      },
+      {
+        name: "Speed bonus",
+        amount: 1200,
+        multiplier: 1
+      },
+      {
+        name: "Difficulty bonus",
+        amount: 500,
+        multiplier: 1
+      },
+      {
+        name: "Respect points",
+        amount: 550,
+        multiplier: 1
+      }
+    ];
+  } else {
+    this.params = params;
+  }
+
+  // Groups
+  this._menuWindow = game.add.group(game.world, "menuLvlStatsWindow");
+  game.add.sprite(0, 0, "menuLvlStatsBg", 0, this._menuWindow);
+  this._statsMeter = game.add.group(this._menuWindow, "menuLvlStatsMeter");
+  this._menuWindowTexts = game.add.group(this._menuWindow, "menuLvlStatsTexts");
+
+  // Next Button
+  var btnNext = game.add.button(0, 0, "btnNext", nextCallback, game, 1, 0, 2, 0, this._menuWindow);
+  btnNext.x = this._menuWindow.width / 2 - btnNext.width / 2;
+  btnNext.y = this._menuWindow.height - this._menuWindow.height / 5;
+
+  // Meter
+  this._meterIndicator = game.add.sprite(0, 0, "menuLvlStatsMeterIndicator", 0, this._statsMeter);
+  this._meterBorder = game.add.sprite(0, 0, "menuLvlStatsMeter", 0, this._statsMeter),
+  this._meterIndicator.y = this._meterBorder.height - 20;
+  this._meterIndicator.x = 4;
+  this._statsMeter.x = this._menuWindow.width - this._menuWindow.width / 5 - this._meterBorder.width / 2;
+  this._statsMeter.y = btnNext.top - this._statsMeter.height - 10;
+
+  // Vars
+
+  this.iterationStartTime = game.time.now;
+  this.currentTextLine = 0;
+  this.texts = [];
+  this.total = 0;
+
+  // Texts
+  this._menuWindowTexts.scale.x = textScaleX;
+
+  if (this.params !== undefined) {
+
+    for (var i = 0, l = this.params.length; i < l; i++) {
+
+      var x = this._menuWindow.width / 7,
+          y;
+
+      // If previuos one exist
+      if (this.texts[i - 1] && this.texts[i - 1].paramName) {
+        y = this.texts[i - 1].paramName.y + textSize * 2;
+      } else {
+        // Highest one at the top of stats meter
+        y = this._statsMeter.y + (this._statsMeter.height / 2) - ((this.params.length / 2) * textSize * 2);
+        // y = this._statsMeter.y;
+      }
+
+      // Creating all text objects
+      this.texts[i] = {};
+      this.texts[i].paramName = game.add.bitmapText(x, y, "carrierCommand", this.params[i].name + ": ", textSize, this._menuWindowTexts);
+      this.texts[i].paramNum = game.add.bitmapText(this._statsMeter.x + 25, y, "carrierCommand", this.params[i].amount.toString(), textSize, this._menuWindowTexts);
+      this.texts[i].paramNum.anchor.x = 1;
+      this.texts[i].paramName.tint = 0;
+      this.texts[i].paramNum.tint = 0;
+
+      // Counting total points
+      this.total += this.params[i].amount * this.params[i].multiplier;
+    }
+
+    var xForTotal = this._menuWindow.width / 7,
+        // yForTotal = this._statsMeter.y + this._statsMeter.height - textSize * 1.5;
+        yForTotal = this.texts[this.texts.length - 1].paramName.y + textSize * 4;
+
+    this.textTotal = {};
+    this.textTotal.paramName = game.add.bitmapText(xForTotal, yForTotal, "carrierCommand", "Total: ", textSize, this._menuWindowTexts);
+    this.textTotal.paramNum = game.add.bitmapText(this._statsMeter.x + 25, yForTotal, "carrierCommand", this.total.toString(), textSize, this._menuWindowTexts);
+    this.textTotal.paramNum.anchor.x = 1;
+    this.textTotal.paramName.tint = 0;
+    this.textTotal.paramNum.tint = 0;
+
+  }
+
+  // Positioning the whole window in the center of screen
+  this._menuWindow.x = game.world.centerX - this._menuWindow.width / 2;
+  this._menuWindow.y = game.world.centerY - this._menuWindow.height / 2;
+
+  this._menuWindowTexts.forEach(function(item) {
+    item.visible = false;
+  }, this);
+
+  this.lineCountTimer = game.time.create(false);
+  this.lineCountTimer.start();
+  game.time.events.repeat(500, 1, this.countLines, this);
+
+};
+
+PowerGym.Prefabs.MenuLvlStats.prototype = {
+
+  update: function() {
+
+
+  },
+
+  countLines: function() {
+
+    this._currentTextParamNum = 0;
+
+    this.lineCountTimerEvent = this.lineCountTimer.loop(0, function() {
+
+      if (this.currentTextLine >= this.texts.length) {
+        this.lineCountTimer.destroy();
+        this.textTotal.paramName.visible = true;
+        this.textTotal.paramNum.visible = true;
+        this.updateStatsMeter();
+        return;
+      }
+
+      if (!this.texts[this.currentTextLine].paramName.visible) {
+        this.texts[this.currentTextLine].paramName.visible = true;
+        this.texts[this.currentTextLine].paramNum.visible = true;
+      }
+
+      var valueStep = Math.pow(10, this.params[this.currentTextLine].amount.toString().length - 1),
+          nextValue = this._currentTextParamNum + valueStep * this.game.time.physicsElapsed,
+          toValue = this.params[this.currentTextLine].amount;
+
+      if (nextValue > toValue) {
+        this.texts[this.currentTextLine].paramNum.text = toValue;
+        this._currentTextParamNum = 0
+        this.currentTextLine++;
+      } else {
+        this._currentTextParamNum = nextValue;
+        this.texts[this.currentTextLine].paramNum.text = Math.round(nextValue);
+      }
+
+      this.updateStatsMeter();
+
+    }, this);
+
+  },
+
+  skipCurrentLine: function() {
+
+    // If timer is still looping
+    if (this.lineCountTimer.length) {
+      this.lineCountTimer.remove(this.lineCountTimerEvent);
+      this.texts[this.currentTextLine].paramNum.text = this.params[this.currentTextLine].amount;
+      this.currentTextLine++;
+      this.countLines();
+    }
+    this.updateStatsMeter();
+
+  },
+
+  updateStatsMeter: function() {
+
+    var currentPoints = 0;
+    if (this.currentTextLine >= this.texts.length) {
+      currentPoints = this.total;
+    } else {
+      for (var i = 0; i <= this.currentTextLine; i++) {
+        if (i == this.currentTextLine) {
+          currentPoints += parseInt(this.texts[i].paramNum.text);
+        } else {
+          currentPoints += this.params[i].amount;
+        }
+      }
+    }
+
+    this._meterIndicator.y = this._meterBorder.height * (1 - (currentPoints / this.maxPoints)) - 20;
+
+  },
+
+  destroy: function() {
+
+    this._menuWindow.destroy();
+
+  },
+
+}

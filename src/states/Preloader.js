@@ -22,15 +22,6 @@ PowerGym.Preloader.prototype = {
     //  as the files below are loaded in.
     // this.load.setPreloadSprite(this.preloadBar);
 
-    //  Here we load the rest of the assets our game needs.
-    //  As this is just a Project Template I"ve not provided these assets, swap them for your own.
-
-    // this.load.image("titlepage", "images/title.jpg");
-    // this.load.atlas("playButton", "images/play_button.png", "images/play_button.json");
-    // this.load.audio("titleMusic", ["audio/main_menu.mp3"]);
-    // this.load.bitmapFont("caslon", "fonts/caslon.png", "fonts/caslon.xml");
-    //  + lots of other required assets here
-
     // Fonts
 
     this.load.bitmapFont("carrierCommand", "assets/fonts/bitmapFonts/carrier_command.png", "assets/fonts/bitmapFonts/carrier_command.xml");
@@ -47,9 +38,13 @@ PowerGym.Preloader.prototype = {
     this.load.image("playerLvl1Body", "assets/sprites/lvl1/player/body.png");
     this.load.image("playerLvl1Head", "assets/sprites/lvl1/player/head.png");
     this.load.spritesheet("playerLvl1Arms", "assets/sprites/lvl1/player/arms270x375.png", 270, 375);
+    this.load.spritesheet("playerLvl1FallDown", "assets/sprites/lvl1/player/body-fall_down618x336.png", 618, 336);
     this.load.spritesheet("lvl1Bar0", "assets/sprites/lvl1/bar0_400x350.png", 400, 350);
     this.load.spritesheet("lvl1Bar1", "assets/sprites/lvl1/bar1_400x350.png", 400, 350);
     this.load.spritesheet("lvl1Bar2", "assets/sprites/lvl1/bar2_400x350.png", 400, 350);
+    this.load.spritesheet("lvl1Bar0FallDown", "assets/sprites/lvl1/bar0-fall_down755x369.png", 755, 369);
+    this.load.spritesheet("lvl1Bar1FallDown", "assets/sprites/lvl1/bar1-fall_down755x369.png", 755, 369);
+    this.load.spritesheet("lvl1Bar2FallDown", "assets/sprites/lvl1/bar2-fall_down755x369.png", 755, 369);
 
     this.load.image("playerLvl2Body", "assets/sprites/lvl2/player/body.png");
     this.load.image("playerLvl2Head", "assets/sprites/lvl2/player/head.png");
@@ -77,6 +72,11 @@ PowerGym.Preloader.prototype = {
     this.load.spritesheet("btnMenuLvlOptionsArrow", "assets/menus/lvl_options/btn-arrow55x120.png", 55, 120);
     this.load.spritesheet("btnCancel", "assets/menus/lvl_options/btn-cancel110x85.png", 110, 85);
     this.load.spritesheet("btnOk", "assets/menus/lvl_options/btn-ok110x85.png", 110, 85);
+
+    this.load.image("menuLvlStatsBg", "assets/menus/lvl_stats/bg.png");
+    this.load.image("menuLvlStatsMeter", "assets/menus/lvl_stats/meter.png");
+    this.load.image("menuLvlStatsMeterIndicator", "assets/menus/lvl_stats/meter-indicator.png");
+    this.load.spritesheet("btnNext", "assets/menus/lvl_stats/btn-next110x85.png", 110, 85);
 
     // Backgrounds
     this.load.image("bgMainMenu", "assets/sprites/bg-main_menu.png");

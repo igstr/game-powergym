@@ -1,47 +1,41 @@
 
-PowerGym.Prefabs.PlayerHome = function(game, x, y) {
+PowerGym.Prefabs.PlayerHome = function(game, x, y, scaleParams) {
 
-  this.head = new Phaser.Sprite(game, 0, 0, "playerHomeHead");
-  this.head.anchor.x = 0.5;
-  this.head.anchor.y = 0.5;
-  this.head.x = 76;
-  this.head.y = 35;
+  if (!scaleParams || typeof scaleParams.torso == "undefined") {
+    var scaleParams = {
+      torso: 1,
+      arms: 1,
+      legs: 1,
+      head: 1
+    };
+  }
 
-  this.torso = new Phaser.Sprite(game, 0, 0, "playerHomeTorso");
-  this.torso.anchor.x = 0.5;
-  this.torso.anchor.y = 0.5;
-  this.torso.x = 75;
-  this.torso.y = 155;
+  this.head = new Phaser.Sprite(game, 76, 35, "playerHomeHead");
+  this.head.anchor.set(0.5);
+  this.head.scale.x = scaleParams.head;
 
-  this.rightArm = new Phaser.Sprite(game, 0, 0, "playerHomeRightArm");
-  this.rightArm.anchor.x = 0.8;
-  this.rightArm.anchor.y = 0;
-  this.rightArm.x = 43;
-  this.rightArm.y = 84;
+  this.torso = new Phaser.Sprite(game, 75, 155, "playerHomeTorso");
+  this.torso.anchor.set(0.5);
+  this.torso.scale.x = scaleParams.torso;
 
-  this.leftArm = new Phaser.Sprite(game, 0, 0, "playerHomeLeftArm");
-  this.leftArm.anchor.x = 0.2;
-  this.leftArm.anchor.y = 0;
-  this.leftArm.x = 103;
-  this.leftArm.y = 83;
+  this.rightArm = new Phaser.Sprite(game, 43, 84, "playerHomeRightArm");
+  this.rightArm.anchor.set(0.8, 0);
+  this.rightArm.scale.x = scaleParams.arms;
 
-  this.rightLeg = new Phaser.Sprite(game, 0, 0, "playerHomeRightLeg");
-  this.rightLeg.anchor.x = 0.5;
-  this.rightLeg.anchor.y = 0;
-  this.rightLeg.x = 62;
-  this.rightLeg.y = 232;
+  this.leftArm = new Phaser.Sprite(game, 103, 83, "playerHomeLeftArm");
+  this.leftArm.anchor.set(0.2, 0);
+  this.leftArm.scale.x = scaleParams.arms;
 
-  this.leftLeg = new Phaser.Sprite(game, 0, 0, "playerHomeLefgLeg");
-  this.leftLeg.anchor.x = 0.5;
-  this.leftLeg.anchor.y = 0;
-  this.leftLeg.x = 100;
-  this.leftLeg.y = 232;
+  this.rightLeg = new Phaser.Sprite(game, 62, 232, "playerHomeRightLeg");
+  this.rightLeg.anchor.set(0.5, 0);
+  this.rightLeg.scale.x = scaleParams.legs;
 
-  this.shorts = new Phaser.Sprite(game, 0, 0, "playerHomeShorts");
-  this.shorts.anchor.x = 0.5;
-  this.shorts.anchor.y = 0.5;
-  this.shorts.x = 80;
-  this.shorts.y = 239;
+  this.leftLeg = new Phaser.Sprite(game, 100, 232, "playerHomeLefgLeg");
+  this.leftLeg.anchor.set(0.5, 0);
+  this.leftLeg.scale.x = scaleParams.legs;
+
+  this.shorts = new Phaser.Sprite(game, 80, 239, "playerHomeShorts");
+  this.shorts.anchor.set(0.5);
 
   this.grBody = game.add.group(null, "player");
   this.grBody.add(this.torso);

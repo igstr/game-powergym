@@ -16,14 +16,6 @@ PowerGym.Lvl2.prototype = {
     // PLAYER
     this.player = new PowerGym.Prefabs.PlayerLvl2(this, 314, 150, this.headBangCallback, this);
 
-    // var metronomeOffset = {x: 70, y: 100};
-    // this.leftMetronome = new PowerGym.Prefabs.Metronome(this, this.world.centerX - metronomeOffset.x, this.world.centerY - metronomeOffset.y);
-    // this.leftMetronome.metronome.rotation = -Math.PI / 4;
-    // this.rightMetronome = new PowerGym.Prefabs.Metronome(this, this.world.centerX + metronomeOffset.x, this.world.centerY - metronomeOffset.y);
-    // this.rightMetronome.metronome.rotation = Math.PI / 4;
-
-    // this.metronome = new PowerGym.Prefabs.Metronome(this, this.world.centerX, this.world.centerY - 100, 60);
-
     // GUI
     this.repsCounterText = this.add.bitmapText(this.world.centerX, 80, "carrierCommand", this.repsCounter);
     this.repsCounterText.anchor.setTo(0.5, 0.5);
@@ -38,6 +30,8 @@ PowerGym.Lvl2.prototype = {
     PowerGym.Keys.Right.onDown.add(this.jKeyCallback, this);
     PowerGym.Keys.J.onDown.add(this.jKeyCallback, this);
     PowerGym.Keys.F.onDown.add(this.fKeyCallback, this);
+
+    PowerGym.Keys.Spacebar.onDown.add(this.spacebarKeyCallback, this);
 
   },
 
@@ -73,9 +67,6 @@ PowerGym.Lvl2.prototype = {
     }
 
     this.player.update();
-    // this.metronome.update();
-    // this.leftMetronome.update();
-    // this.rightMetronome.update();
 
   },
 
@@ -98,6 +89,20 @@ PowerGym.Lvl2.prototype = {
 
     this.failCounter++;
 
+    // Lower Player health
+    var newHealth = this.player.health - 20;
+    this.game.tweens.create(this.player).to({health: newHealth}, 1000, Phaser.Easing.Quadratic.In, true);
+
+  },
+
+  spacebarKeyCallback: function() {
+
+    if (!this.playerReady) {
+      this.player.getReady();
+      this.playerReady = true;
+    }
+    PowerGym.Keys.Spacebar.onDown.remove(this.spacebarKeyCallback, this);
+
   },
 
   btnGoBackCallback: function() {
@@ -108,13 +113,17 @@ PowerGym.Lvl2.prototype = {
 
   fKeyCallback: function() {
 
-    this.player.rightArmVelocity += 1;
+    if (this.playerReady) {
+      this.player.rightArmVelocity += 50 * this.game.time.physicsElapsed;
+    }
 
   },
 
   jKeyCallback: function() {
 
-    this.player.leftArmVelocity -= 1;
+    if (this.playerReady) {
+      this.player.leftArmVelocity -= 50 * this.game.time.physicsElapsed;
+    }
 
   },
 

@@ -7,8 +7,17 @@ PowerGym.Home.prototype = {
 
     this.add.sprite(0, 0, "bgHome");
 
+    if (!PowerGym.GameData.playerProgress) {
+      PowerGym.GameData.playerProgress = {
+        torso: 1,
+        arms: 1,
+        legs: 1,
+        head: 1
+      };
+    }
+
     // Player
-    this.player = new PowerGym.Prefabs.PlayerHome(this, 100, 100);
+    this.player = new PowerGym.Prefabs.PlayerHome(this, 100, 100, PowerGym.GameData.playerProgress);
     this.player.grBody.x = this.scale.width / 4 - this.player.grBody.width / 2;
     this.player.grBody.y = this.world.centerY - this.player.grBody.height / 2;
 
@@ -42,7 +51,7 @@ PowerGym.Home.prototype = {
 
   },
 
-  update: function () {
+  update: function() {
 
     this.player.update();
 

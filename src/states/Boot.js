@@ -48,6 +48,10 @@ PowerGym.Boot.prototype = {
     PowerGym.Keys.K = this.input.keyboard.addKey(Phaser.Keyboard.K);
     PowerGym.Keys.Spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+    // Mouse
+    PowerGym.Keys.MouseL = this.game.input.activePointer.leftButton;
+    PowerGym.Keys.MouseR = this.game.input.activePointer.rightButton;
+    PowerGym.Keys.MouseM = this.game.input.activePointer.middleButton;
 
   },
 

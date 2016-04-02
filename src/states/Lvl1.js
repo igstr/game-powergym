@@ -7,9 +7,11 @@ PowerGym.Lvl1.prototype = {
 
     this.userForce = {x: 0, y: 0};
     this.isPlaying = false;
+    this.fallenDown = false;
     this.failCounter = 0;
     this.repsCounter = 0;
     this.reachedRepBottom = false;
+    this.playerHealthStep = 0;
 
     // Just in case arcade system is not started
     this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -71,10 +73,10 @@ PowerGym.Lvl1.prototype = {
     this.repsCounterText.anchor.setTo(0.5, 0.5);
 
     // Go back button
-    var btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this),
-        btnGoBackMargin = 20;
-    btnGoBack.x = btnGoBackMargin;
-    btnGoBack.y = this.scale.height - btnGoBack.height - btnGoBackMargin;
+    // var btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this),
+    //     btnGoBackMargin = 20;
+    // btnGoBack.x = btnGoBackMargin;
+    // btnGoBack.y = this.scale.height - btnGoBack.height - btnGoBackMargin;
 
     // On screen arrows
     var onScreenArrowMargin = 5;
@@ -134,6 +136,7 @@ PowerGym.Lvl1.prototype = {
     // Wait untill player is ready and add input keys
     if (!this.isPlaying && this.player.isReady == true) {
 
+      this.stateStartTime = this.game.time.now;
       this.isPlaying = true;
 
       PowerGym.Keys.Up.onDown.add(this.pressUp, this);
@@ -143,7 +146,7 @@ PowerGym.Lvl1.prototype = {
       this.onScreenArrowUp.onInputDown.add(this.pressUp, this);
     }
 
-    if (this.isPlaying) {
+    if (this.isPlaying && !this.fallenDown) {
 
       // Catching user input both on screen buttons and keyboard
       if (PowerGym.Keys.Right.isDown
@@ -170,22 +173,20 @@ PowerGym.Lvl1.prototype = {
 
       // Checking if indicator is in his amplitude
       if (this.balanceIndicator.x > this.balanceIndicatorAmplitude) {
-        this.balanceIndicator.body.velocity.x = 0;
-        this.balanceIndicator.x = this.balanceIndicatorAmplitude / 2;
-        this.userForce.x = 0;
-        this.failCounter++;
+        this.player.fallDown("right");
+        this.fallenDown = true;
+        this.endState();
       } else if (this.balanceIndicator.x < 0) {
-        this.balanceIndicator.body.velocity.x = 0;
-        this.balanceIndicator.x = this.balanceIndicatorAmplitude / 2;
-        this.userForce.x = 0;
-        this.failCounter++;
+        this.player.fallDown("left");
+        this.fallenDown = true;
+        this.endState();
       }
 
       // Reps counter
       if (this.player.pressFrac > 0.95 && this.reachedRepBottom) {
         this.reachedRepBottom = false;
         this.repsCounter++;
-      } else if (this.player.pressFrac < 0.05) {
+      } else if (!this.reachedRepBottom && this.player.pressFrac < 0.05) {
         this.reachedRepBottom = true;
       }
 
@@ -196,23 +197,83 @@ PowerGym.Lvl1.prototype = {
       }
       var newBalance = this.balanceIndicator.x / this.balanceIndicatorAmplitude;
 
+      if (PowerGym.GameData.lvl1Difficulty == 2) {
+        // Reducing player health if too long in bottom position
+        if (this.player.pressFrac > 0.05 && this.playerHealthStep < 0.5) {
+          this.playerHealthStep += 0.5 * this.game.time.physicsElapsed;
+        } else if (this.player.pressFrac < 0.05 && this.playerHealthStep > -0.3) {
+          this.playerHealthStep -= 0.2 * this.game.time.physicsElapsed;
+        }
+        this.player.health += this.playerHealthStep;
+      }
+
+      if (!this.fallenDown && this.player.health <= 0) {
+        this.player.fallDown();
+        this.fallenDown = true;
+        this.endState();
+      }
+
       // Updating player
       this.player.balance = newBalance;
       this.player.pressFrac = newPressFrac;
 
       this.player.update();
     }
-
-
   },
 
-  quitGame: function(pointer) {
+  endState: function(pointer) {
 
-      //  Here you should destroy anything you no longer need.
-      //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
+    this.balanceIndicator.body.moves = false;
 
-      //  Then let's go back to the main menu.
-    this.state.start("MainMenu");
+    PowerGym.Keys.Up.onDown.remove(this.pressUp, this);
+    PowerGym.Keys.Down.onDown.remove(this.pressDown, this);
+    this.onScreenArrowDown.onInputDown.remove(this.pressDown, this);
+    this.onScreenArrowUp.onInputDown.remove(this.pressUp, this);
+
+    var stats = [
+      {
+        name: "Reps",
+        amount: this.repsCounter,
+        multiplier: 3 * PowerGym.GameData.lvl1Difficulty
+      },
+      {
+        name: "Speed bonus",
+        amount: Math.round(1000 * (4000 * this.repsCounter) / (this.game.time.now - this.stateStartTime)),
+        multiplier: 1
+      },
+      {
+        name: "Difficulty bonus",
+        amount: 1000 * PowerGym.GameData.lvl1Difficulty,
+        multiplier: 1
+      },
+      {
+        name: "Respect points",
+        amount: 10 * this.repsCounter * this.game.rnd.integerInRange(1, 4),
+        multiplier: 1
+      }
+    ];
+
+    var total = 0;
+    for (var i = 0, l = stats.length; i < l; i++) {
+      total += stats[i].amount;
+    }
+
+    PowerGym.GameData.playerProgress.torso += total / 4000;
+
+    // Stats
+    this.game.time.events.repeat(2000, 1, function() {
+
+      this.menuLvlStats = new PowerGym.Prefabs.MenuLvlStats(this, function() {
+        this.game.state.start("Home");
+      }, stats, 4000);
+
+      PowerGym.Keys.MouseL.onDown.add(function() {
+        this.menuLvlStats.skipCurrentLine();
+      }, this);
+      PowerGym.Keys.Spacebar.onDown.add(function(){
+        this.menuLvlStats.skipCurrentLine();
+      }, this);
+    }, this);
 
   },
 
@@ -276,15 +337,15 @@ PowerGym.Lvl1.prototype = {
   render: function() {
 
     if (PowerGym.DEBUG_MODE) {
-      this.game.debug.text("player balance: " + this.player.balance, 32, 32);
-      this.game.debug.text("player press fraction: " + this.player.pressFrac, 32, 64);
-      this.game.debug.text("balanceIndicator velocity x: " + this.balanceIndicator.body.velocity.x, 32, 96);
-      this.game.debug.text("balanceIndicator x: " + this.balanceIndicator.x, 32, 128);
-      this.game.debug.text("user force: " + this.userForce.x, 32, 160);
-      this.game.debug.text("Fail count: " + this.failCounter, 32, 192);
-      this.game.debug.text("Reps count: " + this.repsCounter, 32, 224);
-      this.game.debug.text("balanceIndicator toX: " + this.toX, 32, 256);
-      this.game.debug.text("unbalance amplifier: " + this.unbalanceAmplifier, 32, 288);
+      this.game.debug.text("player balance: " + this.player.balance, 32, 16);
+      this.game.debug.text("player press fraction: " + this.player.pressFrac, 32, 32);
+      this.game.debug.text("balanceIndicator velocity x: " + this.balanceIndicator.body.velocity.x, 32, 48);
+      this.game.debug.text("balanceIndicator x: " + this.balanceIndicator.x, 32, 64);
+      this.game.debug.text("user force: " + this.userForce.x, 32, 80);
+      this.game.debug.text("balanceIndicator toX: " + this.toX, 32, 96);
+      this.game.debug.text("unbalance amplifier: " + this.unbalanceAmplifier, 32, 112);
+      this.game.debug.text("player health: " + this.player.health, 32, 128);
+      this.game.debug.text("player health step: " + this.playerHealthStep, 32, 144);
     }
 
   },

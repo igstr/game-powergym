@@ -1,25 +1,22 @@
 
 PowerGym.Prefabs.PlayerLvl1 = function(game, x, y) {
 
+  this.game = game;
   this.isReady = false;
+  this._health = 100;
 
   // Group
-  this.body = game.add.group(game.world, "player");
+  this.body = game.add.group(game.world, "playerLvl1");
+  this.bodyFallDown = game.add.group(game.world, "playerLvl1FallDown");
 
-  this._head = game.add.sprite(0, 0, "playerLvl1Head", 0, this.body);
-  this._head.anchor.setTo(0.5, 0.5);
-  this._head.x = 180;
-  this._head.y = 207;
+  this._head = game.add.sprite(180, 207, "playerLvl1Head", 0, this.body);
+  this._head.anchor.set(0.5);
 
-  this._body = game.add.sprite(0, 0, "playerLvl1Body", 0, this.body);
-  this._body.anchor.setTo(0.5, 0.5);
-  this._body.x = 332;
-  this._body.y = 346;
+  this._body = game.add.sprite(332, 346, "playerLvl1Body", 0, this.body);
+  this._body.anchor.set(0.5);
 
-  this._bar = game.add.sprite(0, 0, "lvl1Bar" + PowerGym.GameData.lvl1Difficulty, 34, this.body);
-  this._bar.anchor.setTo(0.5, 0.5);
-  this._bar.x = 190;
-  this._bar.y = 168;
+  this._bar = game.add.sprite(190, 168, "lvl1Bar" + PowerGym.GameData.lvl1Difficulty, 34, this.body);
+  this._bar.anchor.set(0.5);
 
   this._bar.animations.add("pressRight2", [0, 1, 2, 3, 4]);
   this._bar.animations.add("pressRight", [5, 6, 7, 8, 9]);
@@ -28,10 +25,8 @@ PowerGym.Prefabs.PlayerLvl1 = function(game, x, y) {
   this._bar.animations.add("pressCenter", [20, 21, 22, 23, 24]);
   this._bar.animations.add("start", [34, 33, 32, 31, 30, 29, 28, 27, 26, 25]);
 
-  this._arms = game.add.sprite(0, 0, "playerLvl1Arms", 34, this.body);
-  this._arms.anchor.setTo(0.5, 0.5);
-  this._arms.x = 200;
-  this._arms.y = 220;
+  this._arms = game.add.sprite(200, 220, "playerLvl1Arms", 34, this.body);
+  this._arms.anchor.set(0.5);
 
   this._arms.animations.add("pressRight2", [0, 1, 2, 3, 4]);
   this._arms.animations.add("pressRight", [5, 6, 7, 8, 9]);
@@ -49,6 +44,27 @@ PowerGym.Prefabs.PlayerLvl1 = function(game, x, y) {
 
   this.body.x = x;
   this.body.y = y;
+
+  // Seperate invisible fall down body
+  this._bodyFallDown = this.game.add.sprite(-22, 160, "playerLvl1FallDown", 3, this.bodyFallDown);
+  this._barFallDown = this.game.add.sprite(-85, 106, "lvl1Bar" + PowerGym.GameData.lvl1Difficulty + "FallDown", 3, this.bodyFallDown);
+
+  this.bodyFallDown.visible = false;
+
+  this._bodyFallDown.animations.add("fallLeft", [3, 2, 1, 0]);
+  this._bodyFallDown.animations.add("fallRight", [7, 6, 5, 4]);
+  this._bodyFallDown.animations.add("fallLeftWithHeadache", [11, 10, 9, 8]);
+  this._bodyFallDown.animations.add("fallRightWithHeadache", [15, 14, 13, 12]);
+
+  this._barFallDown.animations.add("fallLeft", [3, 2, 1, 0]);
+  this._barFallDown.animations.add("fallRight", [7, 6, 5, 4]);
+
+  this.bodyFallDown.x = x;
+  this.bodyFallDown.y = y;
+
+  PowerGym.Keys.Spacebar.onDown.add(function() {
+    this.fallDown(false, "right");
+  }, this);
 
 };
 
@@ -74,8 +90,8 @@ PowerGym.Prefabs.PlayerLvl1.prototype = {
       }
 
       if (this._arms.animations.name != toBePlayedAnimName) {
-        this._arms.animations.play(toBePlayedAnimName, 0, false);
-        this._bar.animations.play(toBePlayedAnimName, 0, false);
+        this._arms.animations.play(toBePlayedAnimName, 0);
+        this._bar.animations.play(toBePlayedAnimName, 0);
       }
 
     }
@@ -113,8 +129,8 @@ PowerGym.Prefabs.PlayerLvl1.prototype = {
 
   getReady: function() {
 
-    this._arms.animations.play("start", 8, false);
-    this._bar.animations.play("start", 8, false);
+    this._arms.animations.play("start", 8);
+    this._bar.animations.play("start", 8);
 
   },
 
@@ -127,6 +143,35 @@ PowerGym.Prefabs.PlayerLvl1.prototype = {
   stepFrameBackwards: function() {
 
     this._arms.animations.previous(1);
+
+  },
+
+  changeHeadTint: function() {
+
+    var gb = 0.6 + 0.4 * (this._health / 100);
+    this._head.tint = PIXI.rgb2hex([1, gb, gb]);
+
+  },
+
+  fallDown: function(direction) {
+
+    if (direction === undefined) {
+      direction = Math.random() > 0.5 ? "left" : "right";
+    }
+
+    if (direction == "left") {
+      toBePlayedAnimName = "fallLeft";
+    } else {
+      toBePlayedAnimName = "fallRight";
+    }
+
+    headache = this._health <= 0 ? true : false;
+
+    this.body.visible = false;
+    this.bodyFallDown.visible = true;
+
+    this._bodyFallDown.animations.play(toBePlayedAnimName + (headache ? "WithHeadache" : ""), 4);
+    this._barFallDown.animations.play(toBePlayedAnimName, 4);
 
   }
 }
@@ -163,6 +208,25 @@ Object.defineProperty(PowerGym.Prefabs.PlayerLvl1.prototype, 'pressFrac', {
 
   get: function() {
     return this._pressFrac;
+  }
+
+});
+
+Object.defineProperty(PowerGym.Prefabs.PlayerLvl1.prototype, 'health', {
+
+  set: function(value) {
+    if (value > 100) {
+      value = 100;
+    } else if (value < 0) {
+      value = 0;
+    }
+
+    this._health = value;
+    this.changeHeadTint();
+  },
+
+  get: function() {
+    return this._health;
   }
 
 });

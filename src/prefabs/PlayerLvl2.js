@@ -2,6 +2,7 @@
 PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCallbackContext) {
 
   this.game = game;
+  this._health = 100;
 
   if (typeof headBangCallback === "function") {
     this._headBangCallback = headBangCallback;
@@ -48,19 +49,15 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
   PowerGym.Mixins.withShakeAnim.call(this._head);
 
   // ARMS
-  this._leftArm = game.add.sprite(113, 80, "playerLvl2LeftArm", 0, this.arms);
-  // this._leftArm.anchor.setTo(0.8, 0.9);
+  this._leftArm = game.add.sprite(137, 140, "playerLvl2LeftArm", 0, this.arms);
   this._leftArm.body.clearShapes();
   this._leftArm.body.loadPolygon("playerLvl2LeftArmPhysics", "leftArm");
-  // this._leftArm.body.angularDrag = this._armsAngularDrag;
-  // this._leftArm.body.maxAngular = this._armsMaxAngularVelocity;
+  this._leftArm.body.static = true;
 
-  this._rightArm = game.add.sprite(49, 80, "playerLvl2RightArm", 0, this.arms);
-  // this._rightArm.anchor.setTo(0.22, 0.9);
+  this._rightArm = game.add.sprite(28, 140, "playerLvl2RightArm", 0, this.arms);
   this._rightArm.body.clearShapes();
   this._rightArm.body.loadPolygon("playerLvl2RightArmPhysics", "rightArm");
-  // this._rightArm.body.angularDrag = this._armsAngularDrag;
-  // this._rightArm.body.maxAngular = this._armsMaxAngularVelocity;
+  this._rightArm.body.static = true;
 
   this.arms.forEach(function(item) {
     item.body.setCollisionGroup(armsCollisionGroup);
@@ -68,10 +65,8 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
   }, this);
   this.body.bringToTop(this.arms);
 
-  // game.physics.p2.createRevoluteConstraint(this._body, [23, -130], this._leftArm, [-45, -122]);
-  // game.physics.p2.createRevoluteConstraint(this._body, [-30, -130], this._rightArm, [43, -123]);
-  game.physics.p2.createRevoluteConstraint(this._body, [23, -130], this._leftArm, [-22, -60]);
-  game.physics.p2.createRevoluteConstraint(this._body, [-30, -130], this._rightArm, [21, -61]);
+  game.physics.p2.createRevoluteConstraint(this._body, [28, -130], this._leftArm, [-22, -60]);
+  game.physics.p2.createRevoluteConstraint(this._body, [-37, -130], this._rightArm, [21, -61]);
 
   this.headBangCounter = 0;
   this.timeStarted = this.game.time.now;
@@ -85,6 +80,9 @@ PowerGym.Prefabs.PlayerLvl2.prototype = {
   },
 
   getReady: function() {
+
+    this._leftArm.body.static = false;
+    this._rightArm.body.static = false;
 
     // this._arms.animations.play("start", 8, false);
     // this._bar.animations.play("start", 8, false);
@@ -103,6 +101,13 @@ PowerGym.Prefabs.PlayerLvl2.prototype = {
         }
       }
     }
+  },
+
+  changeHeadTint: function() {
+
+    var gb = 0.7 + 0.3 * (this._health / 100);
+    this._head.tint = PIXI.rgb2hex([1, gb, gb]);
+
   }
 
 }
@@ -135,6 +140,25 @@ Object.defineProperty(PowerGym.Prefabs.PlayerLvl2.prototype, 'rightArmVelocity',
 
     return this._rightArm.body.angularVelocity;
 
+  }
+
+});
+
+Object.defineProperty(PowerGym.Prefabs.PlayerLvl2.prototype, 'health', {
+
+  set: function(value) {
+    if (value > 100) {
+      value = 100;
+    } else if (value < 0) {
+      value = 0;
+    }
+
+    this._health = value;
+    this.changeHeadTint();
+  },
+
+  get: function() {
+    return this._health;
   }
 
 });

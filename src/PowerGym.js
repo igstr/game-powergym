@@ -1,19 +1,17 @@
 
-// Main game namespace
+// Game main namespace
 var PowerGym = {
 
   DEBUG_MODE: true,
 
-  // Prefabs namespace
   Prefabs: {},
 
-  // Mixins namespace
   Mixins: {},
 
-  // All keys
+  // Input keys
   Keys: {},
 
-  // All runtime game data
+  // Runtime game data
   GameData: {}
 
 };
