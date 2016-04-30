@@ -1,11 +1,14 @@
 
-PowerGym.Mixins.withFloatAnim = function() {
+PowerGym.Mixins.withFloatAnim = function(radius) {
 
-  if (typeof this.floatAnimRadius == "undefined") {
-    this.floatAnimRadius = 10;
+  if (typeof radius == "undefined") {
+    this.floatAnimRadius = 8;
+  } else {
+    this.floatAnimRadius = radius;
   }
 
-  var startPos = this.position.clone(),
+  var startPos = { x: this.x, y: this.y},
+      tweening = false,
       tweenY,
       tweenX;
 
@@ -26,17 +29,90 @@ PowerGym.Mixins.withFloatAnim = function() {
   this.startFloat = function() {
     floatY.call(this);
     floatX.call(this);
+    tweening = true;
+  }
+
+  this.setFloatStartPosition = function(point) {
+
+    startPos.x = point.x;
+    startPos.y = point.y;
+
+    if (tweening) {
+      this.stopFloat();
+      this.startFloat();
+    }
   }
 
   this.stopFloat = function() {
     if (typeof tweenY != "undefined") {
-      this.tweens.remove(tweenY);
+      this.game.tweens.remove(tweenY);
     }
     if (typeof tweenX != "undefined") {
-      this.tweens.remove(tweenX);
+      this.game.tweens.remove(tweenX);
     }
+    tweening = false;
   }
 };
+
+PowerGym.Mixins.withTeeterAnim = function(angle, speed) {
+
+  var teeterAngle, teeterSpeed;
+
+  if (typeof angle == "undefined") {
+    teeterAngle = Math.PI / 6;
+  } else {
+    teeterAngle = Phaser.Math.degToRad(angle);
+  }
+
+  if (typeof speed == "undefined") {
+    teeterSpeed = 5;
+  } else {
+    teeterSpeed = speed;
+  }
+
+  var startRotation = this.rotation;
+
+  var counter = 0,
+      step = Math.PI * 2 / 360,
+      teeterTimerEvent;
+
+
+  var teeter = function() {
+
+    var tStep = Math.sin(counter);
+    this.rotation = tStep * teeterAngle / 2;
+    counter += step * (teeterSpeed / 10);
+
+  }
+
+  this.setTeeterAngle = function(angle) {
+
+    teeterAngle = Phaser.Math.degToRad(angle);
+
+  }
+
+  this.setTeeterSpeed = function(speed) {
+
+    teeterSpeed = speed;
+
+  }
+
+  this.startTeeter = function() {
+
+    teeterTimerEvent = this.game.time.events.loop(0, teeter, this);
+
+  }
+
+  this.stopTeeter = function() {
+
+    if (typeof teeterTimerEvent == "object") {
+      this.game.time.events.remove(teeterTimerEvent);
+    }
+
+  }
+
+
+}
 
 PowerGym.Mixins.withShakeAnim = function() {
 

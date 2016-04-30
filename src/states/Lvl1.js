@@ -1,7 +1,7 @@
 
-PowerGym.Lvl1 = function(game) { };
+PowerGym.States.Lvl1 = function(game) { };
 
-PowerGym.Lvl1.prototype = {
+PowerGym.States.Lvl1.prototype = {
 
   create: function() {
 
@@ -19,12 +19,15 @@ PowerGym.Lvl1.prototype = {
     // BACKGROUND
     //-------------------
 
-    this.add.sprite(0, 0, "bgLvl1");
+    this.add.image(0, 0, "bgLvl1").scale.set(PowerGym.gameScale);
 
     // PLAYER
     //-------------------
 
-    this.player = new PowerGym.Prefabs.PlayerLvl1(this, 194, 96);
+    var playerX = this.game.width * 194 / 800,
+        playerY = this.game.height * 96 / 600;
+
+    this.player = new PowerGym.Prefabs.PlayerLvl1(this, playerX, playerY);
     this.player.balance = 0.5;
     this.player.pressFrac = 1;
 
@@ -238,12 +241,12 @@ PowerGym.Lvl1.prototype = {
       },
       {
         name: "Speed bonus",
-        amount: Math.round(1000 * (4000 * this.repsCounter) / (this.game.time.now - this.stateStartTime)),
+        amount: Math.round(500 * this.repsCounter * (3000 / (this.game.time.now - this.stateStartTime))),
         multiplier: 1
       },
       {
         name: "Difficulty bonus",
-        amount: 1000 * PowerGym.GameData.lvl1Difficulty,
+        amount: 200 * PowerGym.GameData.lvl1Difficulty,
         multiplier: 1
       },
       {
@@ -258,10 +261,10 @@ PowerGym.Lvl1.prototype = {
       total += stats[i].amount;
     }
 
-    PowerGym.GameData.playerProgress.torso += total / 4000;
+    PowerGym.GameData.Scores.lvl1 = total;
 
     // Stats
-    this.game.time.events.repeat(2000, 1, function() {
+    this.game.time.events.add(2000, function() {
 
       this.menuLvlStats = new PowerGym.Prefabs.MenuLvlStats(this, function() {
         this.game.state.start("Home");

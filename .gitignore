@@ -1,10 +1,10 @@
-bower_components/jquery
-bower_components/phaser/build
-bower_components/phaser/docs
-bower_components/phaser/resources
-bower_components/phaser/tasks
-bower_components/phaser/typescript
-bower_components/grunt-contrib-uglify
+components/jquery
+components/phaser/build
+components/phaser/docs
+components/phaser/resources
+components/phaser/tasks
+components/phaser/typescript
+components/grunt-contrib-uglify
 
 node_modules
 

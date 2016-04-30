@@ -4,18 +4,40 @@
   <meta charset="UTF-8" />
   <title>The Game - "PowerGym"</title>
   <link rel="stylesheet" type="text/css" href="css/styles.css">
-  <script src="bower_components/phaser/build/phaser.min.js"></script>
+  <script src="components/jquery/dist/jquery.min.js"></script>
+  <script src="components/phaser/build/phaser.min.js"></script>
   <script src="build/powergym.min.js"></script>
 </head>
 <body>
 
-<div>
+<div id="gameContainerWrapper">
   <div id="gameContainer"></div>
 </div>
 
-
 <script type="text/javascript">
 window.onload = function() {
+
+  var resizeGameContainer = function() {
+    var gameAspectRatio = 4/3,
+        windowAspectRatio = window.innerWidth / window.innerHeight,
+        gameWidth, gameHeight;
+
+    if (windowAspectRatio > gameAspectRatio) {
+      gameWidth = window.innerHeight * gameAspectRatio;
+      gameHeight = window.innerHeight;
+    } else {
+      gameWidth = window.innerWidth;
+      gameHeight = window.innerWidth / gameAspectRatio;
+    }
+
+    var container = document.getElementById("gameContainer");
+    container.style.width = gameWidth + "px";
+    container.style.height = gameHeight + "px";
+  }
+
+  $(window).resize(resizeGameContainer);
+  resizeGameContainer();
+
   var game = new Phaser.Game(800, 600, Phaser.AUTO, "gameContainer", null, false, false);
 
   game.state.add("Boot", PowerGym.Boot);

@@ -13,28 +13,53 @@ PowerGym.Boot.prototype = {
     //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
     this.stage.disableVisibilityChange = true;
 
-    if (this.game.device.desktop) {
+    // Setting stage backgound to white instead of black
+    this.game.stage.backgroundColor = 0xFFFFFF;
 
-      //  If you have any desktop specific settings, they can go in here
-      this.scale.pageAlignHorizontally = true;
+    // Scale setup
+    this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
+    this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.scale.onSizeChange.add(function() {
 
-    } else {
-      //  Same goes for mobile settings.
-      //  In this case we"re saying "scale the game, no lower than 480x260 and no higher than 1024x768"
-      this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-      this.scale.setMinMax(480, 260, 1024, 768);
+      // Setting global game scale for game elements to use. Also preserving
+      // 4:3 game aspect ratio.
+      var gameAspectRatio = Math.round(100 * this.game.width / this.game.height) / 100;
+      if (gameAspectRatio > 1.33) {
+        PowerGym.gameScale = this.game.height / 600;
+      } else if (gameAspectRatio <= 1.33) {
+        PowerGym.gameScale = this.game.width / 800;
+      }
+
+    }, this);
+
+    // If mobile
+    if (!this.game.device.desktop) {
       this.scale.forceLandscape = true;
-      this.scale.pageAlignHorizontally = true;
+
+      // Adds a signal to every state to go fullscreen if any input is received.
+      this.state.onStateChange.add(function() {
+
+        this.input.onDown.add(function() {
+          if (!this.game.scale.isFullScreen) {
+            this.game.scale.startFullScreen(false);
+          }
+        }, this);
+
+      }, this);
     }
 
+    // this.scale.scaleMode = Phaser.ScaleManager.NO_SCALE;
+    // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    // this.scale.setMinMax(320, 240, 800, 600);
+
     // Adding game states
-    this.state.add("Preloader", PowerGym.Preloader);
-    this.state.add("MainMenu", PowerGym.MainMenu);
-    this.state.add("Home", PowerGym.Home);
-    this.state.add("Lvl1", PowerGym.Lvl1);
-    this.state.add("Lvl2", PowerGym.Lvl2);
-    this.state.add("Lvl3", PowerGym.Lvl3);
-    this.state.add("Lvl4", PowerGym.Lvl4);
+    this.state.add("Preloader", PowerGym.States.Preloader);
+    this.state.add("MainMenu", PowerGym.States.MainMenu);
+    this.state.add("Home", PowerGym.States.Home);
+    this.state.add("Lvl1", PowerGym.States.Lvl1);
+    this.state.add("Lvl2", PowerGym.States.Lvl2);
+    this.state.add("Lvl3", PowerGym.States.Lvl3);
+    this.state.add("Lvl4", PowerGym.States.Lvl4);
 
     // Initializing game keys
     PowerGym.Keys.Up = this.input.keyboard.addKey(Phaser.Keyboard.UP);

@@ -1,20 +1,29 @@
 
-PowerGym.Lvl2 = function(game) { };
-
-PowerGym.Lvl2.prototype = {
-
-  create: function () {
+PowerGym.States.Lvl2 = function(game) {
 
     this.repsCounter = 0;
     this.failCounter = 0;
     this.leftArmReachedRepBottom = true;
     this.rightArmReachedRepBottom = true;
+    this.playerReady = false;
+    this.fallenDown = false;
+    this.stateStartTime = 0;
+    this.controlsDisabled = false;
+
+};
+
+PowerGym.States.Lvl2.prototype = {
+
+  create: function () {
 
     // BACKGROUND
-    this.add.sprite(0, 0, "bgLvl2");
+    this.add.image(0, 0, "bgLvl2").scale.set(PowerGym.gameScale);
 
     // PLAYER
-    this.player = new PowerGym.Prefabs.PlayerLvl2(this, 314, 150, this.headBangCallback, this);
+
+    var playerX = this.game.width * 314 / 800,
+        playerY = this.game.height * 160 / 600;
+    this.player = new PowerGym.Prefabs.PlayerLvl2(this, playerX, playerY, this.headBangCallback, this);
 
     // GUI
     this.repsCounterText = this.add.bitmapText(this.world.centerX, 80, "carrierCommand", this.repsCounter);
@@ -23,13 +32,9 @@ PowerGym.Lvl2.prototype = {
     var btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this),
         margin = 20;
     btnGoBack.x = margin;
-    btnGoBack.y = this.scale.height - btnGoBack.height - margin;
+    btnGoBack.y = this.game.height - btnGoBack.height - margin;
 
     // INPUT
-    PowerGym.Keys.Left.onDown.add(this.fKeyCallback, this);
-    PowerGym.Keys.Right.onDown.add(this.jKeyCallback, this);
-    PowerGym.Keys.J.onDown.add(this.jKeyCallback, this);
-    PowerGym.Keys.F.onDown.add(this.fKeyCallback, this);
 
     PowerGym.Keys.Spacebar.onDown.add(this.spacebarKeyCallback, this);
 
@@ -40,30 +45,41 @@ PowerGym.Lvl2.prototype = {
     // Updating reps counter text
     this.repsCounterText.text = this.repsCounter;
 
-    if (PowerGym.Keys.J.isDown || PowerGym.Keys.Right.isDown) {
-      this.jKeyCallback();
-    }
-    if (PowerGym.Keys.F.isDown || PowerGym.Keys.Left.isDown) {
-      this.fKeyCallback();
-    }
+    if (!this.fallenDown) {
 
-    // Reps counter
-    if (this.leftArmReachedRepBottom
-        && this.rightArmReachedRepBottom
-        && this.player._leftArm.rotation < -Math.PI / 2
-        && this.player._rightArm.rotation > Math.PI / 2
-    ) {
-      this.leftArmReachedRepBottom = false;
-      this.rightArmReachedRepBottom = false;
-      this.repsCounter++;
-    }
+      if (!this.controlsDisabled) {
+        if (PowerGym.Keys.J.isDown || PowerGym.Keys.Right.isDown) {
+          this.jKeyCallback();
+        }
+        if (PowerGym.Keys.F.isDown || PowerGym.Keys.Left.isDown) {
+          this.fKeyCallback();
+        }
+      }
 
-    // Checking if rep bottom reached
-    if (!this.leftArmReachedRepBottom && this.player._leftArm.rotation > 0) {
-      this.leftArmReachedRepBottom = true;
-    }
-    if (!this.rightArmReachedRepBottom && this.player._rightArm.rotation < 0) {
-      this.rightArmReachedRepBottom = true;
+      // Reps counter
+      if (this.leftArmReachedRepBottom
+          && this.rightArmReachedRepBottom
+          && this.player._leftArm.rotation < -Math.PI / 2
+          && this.player._rightArm.rotation > Math.PI / 2
+      ) {
+        this.leftArmReachedRepBottom = false;
+        this.rightArmReachedRepBottom = false;
+        this.repsCounter++;
+      }
+
+      // Checking if rep bottom reached
+      if (!this.leftArmReachedRepBottom && this.player._leftArm.rotation > 0) {
+        this.leftArmReachedRepBottom = true;
+      }
+      if (!this.rightArmReachedRepBottom && this.player._rightArm.rotation < 0) {
+        this.rightArmReachedRepBottom = true;
+      }
+
+      if (this.player.health <= 0) {
+        this.player.fallDown();
+        this.fallenDown = true;
+        this.endState();
+      }
     }
 
     this.player.update();
@@ -85,6 +101,55 @@ PowerGym.Lvl2.prototype = {
 
   },
 
+  endState: function(pointer) {
+
+    var stats = [
+      {
+        name: "Reps",
+        amount: this.repsCounter,
+        multiplier: 3 * PowerGym.GameData.lvl2Difficulty
+      },
+      {
+        name: "Speed bonus",
+        amount: Math.round(500 * (4000 * this.repsCounter) / (this.game.time.now - this.stateStartTime)),
+        multiplier: 1
+      },
+      {
+        name: "Difficulty bonus",
+        amount: 200 * PowerGym.GameData.lvl2Difficulty,
+        multiplier: 1
+      },
+      {
+        name: "Respect points",
+        amount: 10 * this.repsCounter * this.game.rnd.integerInRange(1, 4),
+        multiplier: 1
+      }
+    ];
+
+    var total = 0;
+    for (var i = 0, l = stats.length; i < l; i++) {
+      total += stats[i].amount;
+    }
+
+    PowerGym.GameData.Scores.lvl2 = total;
+
+    // Stats
+    this.game.time.events.add(2000, function() {
+
+      this.menuLvlStats = new PowerGym.Prefabs.MenuLvlStats(this, function() {
+        this.game.state.start("Home");
+      }, stats, 4000);
+
+      PowerGym.Keys.MouseL.onDown.add(function() {
+        this.menuLvlStats.skipCurrentLine();
+      }, this);
+      PowerGym.Keys.Spacebar.onDown.add(function(){
+        this.menuLvlStats.skipCurrentLine();
+      }, this);
+    }, this);
+
+  },
+
   headBangCallback: function() {
 
     this.failCounter++;
@@ -93,13 +158,18 @@ PowerGym.Lvl2.prototype = {
     var newHealth = this.player.health - 20;
     this.game.tweens.create(this.player).to({health: newHealth}, 1000, Phaser.Easing.Quadratic.In, true);
 
+    // Disable user input for half a second
+    this.controlsDisabled = true;
+    this.game.time.events.add(500, function() {
+      this.controlsDisabled = false;
+    }, this);
+
   },
 
   spacebarKeyCallback: function() {
 
     if (!this.playerReady) {
-      this.player.getReady();
-      this.playerReady = true;
+      this.getReady();
     }
     PowerGym.Keys.Spacebar.onDown.remove(this.spacebarKeyCallback, this);
 
@@ -111,18 +181,33 @@ PowerGym.Lvl2.prototype = {
 
   },
 
+  getReady: function() {
+
+    this.player.getReady();
+    this.playerReady = true;
+    this.stateStartTime = this.game.time.now;
+
+  },
+
   fKeyCallback: function() {
 
-    if (this.playerReady) {
+    if (this.playerReady && !this.controlsDisabled) {
       this.player.rightArmVelocity += 50 * this.game.time.physicsElapsed;
+    }
+    if (!this.playerReady) {
+      this.getReady();
     }
 
   },
 
   jKeyCallback: function() {
 
-    if (this.playerReady) {
+    if (this.playerReady && !this.controlsDisabled) {
       this.player.leftArmVelocity -= 50 * this.game.time.physicsElapsed;
+    }
+
+    if (!this.playerReady) {
+      this.getReady();
     }
 
   },

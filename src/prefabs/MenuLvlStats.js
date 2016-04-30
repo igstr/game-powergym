@@ -105,6 +105,7 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
   }
 
   // Positioning the whole window in the center of screen
+  this._menuWindow.scale.set(PowerGym.gameScale)
   this._menuWindow.x = game.world.centerX - this._menuWindow.width / 2;
   this._menuWindow.y = game.world.centerY - this._menuWindow.height / 2;
 
@@ -125,6 +126,9 @@ PowerGym.Prefabs.MenuLvlStats.prototype = {
 
   },
 
+  /**
+   * Plays counting animations on each of lines
+   */
   countLines: function() {
 
     this._currentTextParamNum = 0;
@@ -167,6 +171,11 @@ PowerGym.Prefabs.MenuLvlStats.prototype = {
 
     // If timer is still looping
     if (this.lineCountTimer.length) {
+
+      if (!this.texts[this.currentTextLine].paramName.visible) {
+        this.texts[this.currentTextLine].paramName.visible = true;
+        this.texts[this.currentTextLine].paramNum.visible = true;
+      }
       this.lineCountTimer.remove(this.lineCountTimerEvent);
       this.texts[this.currentTextLine].paramNum.text = this.params[this.currentTextLine].amount;
       this.currentTextLine++;

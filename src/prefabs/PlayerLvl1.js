@@ -42,12 +42,16 @@ PowerGym.Prefabs.PlayerLvl1 = function(game, x, y) {
     this.isReady = true;
   }, this);
 
+  this.body.scale.set(PowerGym.gameScale);
   this.body.x = x;
   this.body.y = y;
 
   // Seperate invisible fall down body
-  this._bodyFallDown = this.game.add.sprite(-22, 160, "playerLvl1FallDown", 3, this.bodyFallDown);
-  this._barFallDown = this.game.add.sprite(-85, 106, "lvl1Bar" + PowerGym.GameData.lvl1Difficulty + "FallDown", 3, this.bodyFallDown);
+  var gScale = PowerGym.gameScale;
+  this._bodyFallDown = this.game.add.sprite(-22 * gScale, 160 * gScale, "playerLvl1FallDown", 3, this.bodyFallDown);
+  this._barFallDown = this.game.add.sprite(-85 * gScale, 106 * gScale, "lvl1Bar" + PowerGym.GameData.lvl1Difficulty + "FallDown", 3, this.bodyFallDown);
+  this._bodyFallDown.scale.set(gScale);
+  this._barFallDown.scale.set(gScale);
 
   this.bodyFallDown.visible = false;
 

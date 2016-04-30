@@ -1,35 +1,57 @@
 
-PowerGym.Lvl4 = function(game) { };
+PowerGym.States.Lvl4 = function(game) { };
 
-PowerGym.Lvl4.prototype = {
+PowerGym.States.Lvl4.prototype = {
 
   create: function () {
 
-    this.add.sprite(0, 0, "bgMainMenu");
+    this.gameScale = PowerGym.gameScale;
 
-    var btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this),
-        margin = 20;
+    this.bgImage = this.add.image(0, 0, "bgMainMenu");
+    this.adjustGameObject("bg");
 
-    btnGoBack.x = margin;
-    btnGoBack.y = this.scale.height - btnGoBack.height - margin;
+    this.btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this);
+    this.adjustGameObject("btnGoBack");
 
   },
 
   update: function () { },
 
-  quitGame: function(pointer) {
+  adjustGameObject: function(name) {
 
-      //  Here you should destroy anything you no longer need.
-      //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
+    switch (name) {
+      case "bg":
+        this.bgImage.scale.set(this.gameScale);
+        break;
 
-      //  Then let's go back to the main menu.
-    this.state.start("MainMenu");
+      case "btnGoBack":
+        var margin = 20 * this.gameScale;
+        this.btnGoBack.x = margin;
+        this.btnGoBack.y = this.game.height - this.btnGoBack.height - margin;
+        break;
+      default:
+    }
+
+  },
+
+  render: function() {
+
+    // If window was resized readjusting game objects
+    if (this.gameScale != PowerGym.gameScale) {
+
+      this.gameScale = PowerGym.gameScale;
+      var gameObjectsToAdjust = ["bg", "btnGoBack"];
+      for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
+        this.adjustGameObject(gameObjectsToAdjust[i]);
+      }
+    }
 
   },
 
   btnGoBackCallback: function() {
-    this.state.start("Home");
-  }
 
+    this.state.start("Home");
+
+  }
 
 };
