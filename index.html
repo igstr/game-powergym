@@ -6,7 +6,7 @@
   <link rel="stylesheet" type="text/css" href="css/styles.css">
   <script src="components/jquery/dist/jquery.min.js"></script>
   <script src="components/phaser/build/phaser.min.js"></script>
-  <script src="build/powergym.min.js"></script>
+  <script src="build/powergym.min.js?v1"></script>
 </head>
 <body>
 
@@ -18,21 +18,24 @@
 window.onload = function() {
 
   var resizeGameContainer = function() {
-    var gameAspectRatio = 4/3,
-        windowAspectRatio = window.innerWidth / window.innerHeight,
-        gameWidth, gameHeight;
 
-    if (windowAspectRatio > gameAspectRatio) {
-      gameWidth = window.innerHeight * gameAspectRatio;
-      gameHeight = window.innerHeight;
+    var windowAspectRatio = window.innerWidth / window.innerHeight,
+        containerWidth, containerHeight;
+
+    if (windowAspectRatio > PowerGym.MAX_ASPECT_RATIO) {
+      containerWidth = window.innerHeight * PowerGym.MAX_ASPECT_RATIO;
+      containerHeight = window.innerHeight;
+    } else if (windowAspectRatio < PowerGym.MIN_ASPECT_RATIO) {
+      containerWidth = window.innerWidth;
+      containerHeight = window.innerWidth / PowerGym.MIN_ASPECT_RATIO;
     } else {
-      gameWidth = window.innerWidth;
-      gameHeight = window.innerWidth / gameAspectRatio;
+      containerWidth = window.innerWidth;
+      containerHeight = window.innerHeight;
     }
 
     var container = document.getElementById("gameContainer");
-    container.style.width = gameWidth + "px";
-    container.style.height = gameHeight + "px";
+    container.style.width = containerWidth + "px";
+    container.style.height = containerHeight + "px";
   }
 
   $(window).resize(resizeGameContainer);

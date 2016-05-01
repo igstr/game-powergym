@@ -18,17 +18,12 @@ PowerGym.Boot.prototype = {
 
     // Scale setup
     this.scale.scaleMode = Phaser.ScaleManager.RESIZE;
-    this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.scale.fullScreenScaleMode = Phaser.ScaleManager.RESIZE;
     this.scale.onSizeChange.add(function() {
 
-      // Setting global game scale for game elements to use. Also preserving
-      // 4:3 game aspect ratio.
-      var gameAspectRatio = Math.round(100 * this.game.width / this.game.height) / 100;
-      if (gameAspectRatio > 1.33) {
-        PowerGym.GameData.scale = this.game.height / 600;
-      } else if (gameAspectRatio <= 1.33) {
-        PowerGym.GameData.scale = this.game.width / 800;
-      }
+      // Setting global game scale and aspect ratio for game objects to use.
+      PowerGym.GameData.scale = this.game.height / PowerGym.ORIGINAL_HEIGHT;
+      PowerGym.GameData.aspectRatio = this.game.width / this.game.height;
 
     }, this);
 

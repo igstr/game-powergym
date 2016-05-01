@@ -6,6 +6,12 @@ var PowerGym = {
 
   MAIN_MENU_DISABLED: false,
 
+  MAX_ASPECT_RATIO: 2.4,
+
+  MIN_ASPECT_RATIO: 4/3,
+
+  ORIGINAL_HEIGHT: 600,
+
   States: {},
 
   Prefabs: {},

@@ -10,6 +10,7 @@ PowerGym.States.MainMenu.prototype = {
   create: function() {
 
     this.gameScale = PowerGym.GameData.scale;
+    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
 
     this.bgImage = this.add.sprite(0, 0, "bgMainMenu");
     this.adjustGameObject("bg");
@@ -58,6 +59,7 @@ PowerGym.States.MainMenu.prototype = {
         break;
       case "bg":
         this.bgImage.scale.set(this.gameScale);
+        this.bgImage.x = this.game.width / 2 - this.bgImage.width / 2;
         break;
       case "copyrightText":
         var margin = 25 * this.gameScale;
@@ -72,8 +74,9 @@ PowerGym.States.MainMenu.prototype = {
   render: function() {
 
     // If window was resized readjusting game objects
-    if (this.gameScale != PowerGym.GameData.scale) {
+    if (this.gameAspectRatio != PowerGym.GameData.aspectRatio) {
 
+      this.gameAspectRatio = PowerGym.GameData.aspectRatio;
       this.gameScale = PowerGym.GameData.scale;
       var gameObjectsToAdjust = ["bg", "titleAndPlayBtn", "copyrightText"];
       for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {

@@ -6,6 +6,7 @@ PowerGym.States.Home.prototype = {
   create: function () {
 
     this.gameScale = PowerGym.GameData.scale;
+    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
 
     this.bgImage = this.add.image(0, 0, "bgHome");
     this.adjustGameObject("bg");
@@ -20,10 +21,13 @@ PowerGym.States.Home.prototype = {
     }
 
     // Player
-    this.player = new PowerGym.Prefabs.PlayerHome(this, 100, 100, PowerGym.UserData.playerProgress);
-    this.player.body.scale.set(PowerGym.GameData.scale);
-    this.player.body.x = this.game.width / 4 - this.player.body.width / 2;
-    this.player.body.y = this.game.height / 2 - this.player.body.height / 2;
+    this.player = new PowerGym.Prefabs.PlayerHome(
+        this,
+        100,
+        100,
+        PowerGym.UserData.playerProgress
+    );
+    this.adjustGameObject("player");
 
     // Enlarging player muscles if there are some scores from levels. After
     // that setting all scores to zero.
@@ -70,7 +74,7 @@ PowerGym.States.Home.prototype = {
     }
 
     // Menu level buttons
-    var btnScale = PowerGym.GameData.scale * 1.3,
+    var btnScale = 1.3,
         btnImgSize = 100,
         margin = 10 * btnScale;
         row1 = 0,
@@ -84,15 +88,13 @@ PowerGym.States.Home.prototype = {
     this.add.button(col1, row2, "btnLvl3", this.btnLvl3Callback, this, 1, 0, 2, 0, this.grLvlBtns);
     this.add.button(col2, row2, "btnLvl4", this.btnLvl4Callback, this, 1, 0, 2, 0, this.grLvlBtns);
 
-    this.grLvlBtns.x = this.game.width - (this.game.width / 4) - (btnImgSize * btnScale) - margin - 40;
-    this.grLvlBtns.y = this.world.centerY - col2;
-    // this.adjustGameObject("lvlBtns");
-
     this.grLvlBtns.forEach(function(item) {
       item.scale.setTo(btnScale, btnScale);
       PowerGym.Mixins.withFloatAnim.call(item);
       item.startFloat();
     });
+
+    this.adjustGameObject("lvlBtns");
 
     // Input
     PowerGym.Keys.Up.onDown.add(this.player.scaleEverythingUp, this.player);
@@ -111,10 +113,23 @@ PowerGym.States.Home.prototype = {
     switch (name) {
       case "bg":
         this.bgImage.scale.set(this.gameScale);
+        this.bgImage.x = this.game.width / 2 - this.bgImage.width / 2;
         break;
       case "player":
+        this.player.body.scale.set(this.gameScale);
+        this.player.body.x = this.game.width / 2
+          - 164 * this.gameScale
+          - this.player.body.width / 2;
+        this.player.body.y = this.game.height / 2
+          - this.player.body.height / 2;
         break;
       case "lvlBtns":
+        this.grLvlBtns.scale.set(this.gameScale);
+        this.grLvlBtns.x = this.game.width / 2
+          + 164 * this.gameScale
+          - this.grLvlBtns.width / 2;
+        this.grLvlBtns.y = this.game.height / 2
+          - this.grLvlBtns.height / 2;
         break;
       default:
     }
@@ -124,10 +139,12 @@ PowerGym.States.Home.prototype = {
   render: function() {
 
     // If window was resized readjusting game objects
-    if (this.gameScale != PowerGym.GameData.scale) {
+    if (this.gameAspectRatio != PowerGym.GameData.aspectRatio) {
 
+      this.gameAspectRatio = PowerGym.GameData.aspectRatio;
       this.gameScale = PowerGym.GameData.scale;
-      var gameObjectsToAdjust = ["bg"];
+
+      var gameObjectsToAdjust = ["bg", "player", "lvlBtns"];
       for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
         this.adjustGameObject(gameObjectsToAdjust[i]);
       }
