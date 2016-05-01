@@ -19,7 +19,7 @@ PowerGym.States.Lvl1.prototype = {
     // BACKGROUND
     //-------------------
 
-    this.add.image(0, 0, "bgLvl1").scale.set(PowerGym.gameScale);
+    this.add.image(0, 0, "bgLvl1").scale.set(PowerGym.GameData.scale);
 
     // PLAYER
     //-------------------
@@ -200,7 +200,7 @@ PowerGym.States.Lvl1.prototype = {
       }
       var newBalance = this.balanceIndicator.x / this.balanceIndicatorAmplitude;
 
-      if (PowerGym.GameData.lvl1Difficulty == 2) {
+      if (PowerGym.UserData.lvl1Difficulty == 2) {
         // Reducing player health if too long in bottom position
         if (this.player.pressFrac > 0.05 && this.playerHealthStep < 0.5) {
           this.playerHealthStep += 0.5 * this.game.time.physicsElapsed;
@@ -237,7 +237,7 @@ PowerGym.States.Lvl1.prototype = {
       {
         name: "Reps",
         amount: this.repsCounter,
-        multiplier: 3 * PowerGym.GameData.lvl1Difficulty
+        multiplier: 3 * PowerGym.UserData.lvl1Difficulty
       },
       {
         name: "Speed bonus",
@@ -246,7 +246,7 @@ PowerGym.States.Lvl1.prototype = {
       },
       {
         name: "Difficulty bonus",
-        amount: 200 * PowerGym.GameData.lvl1Difficulty,
+        amount: 200 * PowerGym.UserData.lvl1Difficulty,
         multiplier: 1
       },
       {
@@ -261,7 +261,7 @@ PowerGym.States.Lvl1.prototype = {
       total += stats[i].amount;
     }
 
-    PowerGym.GameData.Scores.lvl1 = total;
+    PowerGym.UserData.Scores.lvl1 = total;
 
     // Stats
     this.game.time.events.add(2000, function() {

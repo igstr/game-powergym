@@ -17,7 +17,7 @@ PowerGym.States.Lvl2.prototype = {
   create: function () {
 
     // BACKGROUND
-    this.add.image(0, 0, "bgLvl2").scale.set(PowerGym.gameScale);
+    this.add.image(0, 0, "bgLvl2").scale.set(PowerGym.GameData.scale);
 
     // PLAYER
 
@@ -107,7 +107,7 @@ PowerGym.States.Lvl2.prototype = {
       {
         name: "Reps",
         amount: this.repsCounter,
-        multiplier: 3 * PowerGym.GameData.lvl2Difficulty
+        multiplier: 3 * PowerGym.UserData.lvl2Difficulty
       },
       {
         name: "Speed bonus",
@@ -116,7 +116,7 @@ PowerGym.States.Lvl2.prototype = {
       },
       {
         name: "Difficulty bonus",
-        amount: 200 * PowerGym.GameData.lvl2Difficulty,
+        amount: 200 * PowerGym.UserData.lvl2Difficulty,
         multiplier: 1
       },
       {
@@ -131,7 +131,7 @@ PowerGym.States.Lvl2.prototype = {
       total += stats[i].amount;
     }
 
-    PowerGym.GameData.Scores.lvl2 = total;
+    PowerGym.UserData.Scores.lvl2 = total;
 
     // Stats
     this.game.time.events.add(2000, function() {

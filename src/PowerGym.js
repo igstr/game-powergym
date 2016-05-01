@@ -17,8 +17,8 @@ var PowerGym = {
   // Input keys
   Keys: {},
 
-  // Runtime game data
-  GameData: {
+  // User save data and preferences
+  UserData: {
 
     Scores: {},
 
@@ -34,6 +34,15 @@ var PowerGym = {
       totalWorkoutTime: 0,
 
     }
+
+  },
+
+  // Runtime game data
+  GameData: {
+
+    scale: 1,
+
+    aspectRatio: 1
 
   }
 

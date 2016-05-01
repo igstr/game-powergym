@@ -19,11 +19,11 @@ PowerGym.Prefabs.MenuLvlOptions = function(game, lvlNum, okCallback, cancelCallb
 
   if (lvlNum == 1 || lvlNum == 2) {
 
-    if (lvlNum == 1 && typeof PowerGym.GameData.lvl1Difficulty == "undefined") {
-      PowerGym.GameData.lvl1Difficulty = 0;
+    if (lvlNum == 1 && typeof PowerGym.UserData.lvl1Difficulty == "undefined") {
+      PowerGym.UserData.lvl1Difficulty = 0;
     }
-    if (lvlNum == 2 && typeof PowerGym.GameData.lvl2Difficulty == "undefined") {
-      PowerGym.GameData.lvl2Difficulty = 0;
+    if (lvlNum == 2 && typeof PowerGym.UserData.lvl2Difficulty == "undefined") {
+      PowerGym.UserData.lvl2Difficulty = 0;
     }
 
     // Weights
@@ -34,11 +34,11 @@ PowerGym.Prefabs.MenuLvlOptions = function(game, lvlNum, okCallback, cancelCallb
       this._weights[i].y = (this._menuWindow.height / 5) * 2;
 
       if (lvlNum == 1) {
-        if (PowerGym.GameData.lvl1Difficulty != i) {
+        if (PowerGym.UserData.lvl1Difficulty != i) {
           this._weights[i].visible = false;
         }
       } else if (lvlNum == 2) {
-        if (PowerGym.GameData.lvl2Difficulty != i) {
+        if (PowerGym.UserData.lvl2Difficulty != i) {
           this._weights[i].visible = false;
         }
       }
@@ -71,7 +71,7 @@ PowerGym.Prefabs.MenuLvlOptions = function(game, lvlNum, okCallback, cancelCallb
     btnRightArrow.rotation = Math.PI;
 
     // Positioning the whole window in the center of screen
-    this._menuWindow.scale.set(PowerGym.gameScale);
+    this._menuWindow.scale.set(PowerGym.GameData.scale);
     this._menuWindow.x = game.world.centerX - this._menuWindow.width / 2;
     this._menuWindow.y = game.world.centerY - this._menuWindow.height / 2;
   }
@@ -92,44 +92,44 @@ PowerGym.Prefabs.MenuLvlOptions.prototype = {
 
   btnLeftArrowCallback1: function() {
 
-    var nextIndex = PowerGym.GameData.lvl1Difficulty - 1;
+    var nextIndex = PowerGym.UserData.lvl1Difficulty - 1;
     if (nextIndex >= 0) {
-      this._weights[PowerGym.GameData.lvl1Difficulty].visible = false;
+      this._weights[PowerGym.UserData.lvl1Difficulty].visible = false;
       this._weights[nextIndex].visible = true;
-      PowerGym.GameData.lvl1Difficulty = nextIndex;
+      PowerGym.UserData.lvl1Difficulty = nextIndex;
     }
 
   },
 
   btnRightArrowCallback1: function() {
 
-    var nextIndex = PowerGym.GameData.lvl1Difficulty + 1;
+    var nextIndex = PowerGym.UserData.lvl1Difficulty + 1;
     if (nextIndex < this._weights.length) {
-      this._weights[PowerGym.GameData.lvl1Difficulty].visible = false;
+      this._weights[PowerGym.UserData.lvl1Difficulty].visible = false;
       this._weights[nextIndex].visible = true;
-      PowerGym.GameData.lvl1Difficulty = nextIndex;
+      PowerGym.UserData.lvl1Difficulty = nextIndex;
     }
 
   },
 
   btnLeftArrowCallback2: function() {
 
-    var nextIndex = PowerGym.GameData.lvl2Difficulty - 1;
+    var nextIndex = PowerGym.UserData.lvl2Difficulty - 1;
     if (nextIndex >= 0) {
-      this._weights[PowerGym.GameData.lvl2Difficulty].visible = false;
+      this._weights[PowerGym.UserData.lvl2Difficulty].visible = false;
       this._weights[nextIndex].visible = true;
-      PowerGym.GameData.lvl2Difficulty = nextIndex;
+      PowerGym.UserData.lvl2Difficulty = nextIndex;
     }
 
   },
 
   btnRightArrowCallback2: function() {
 
-    var nextIndex = PowerGym.GameData.lvl2Difficulty + 1;
+    var nextIndex = PowerGym.UserData.lvl2Difficulty + 1;
     if (nextIndex < this._weights.length) {
-      this._weights[PowerGym.GameData.lvl2Difficulty].visible = false;
+      this._weights[PowerGym.UserData.lvl2Difficulty].visible = false;
       this._weights[nextIndex].visible = true;
-      PowerGym.GameData.lvl2Difficulty = nextIndex;
+      PowerGym.UserData.lvl2Difficulty = nextIndex;
     }
 
   }

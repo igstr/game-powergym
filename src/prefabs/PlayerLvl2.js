@@ -4,7 +4,7 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
   this.game = game;
   this._health = 100;
 
-  var difficulty = PowerGym.GameData.lvl2Difficulty;
+  var difficulty = PowerGym.UserData.lvl2Difficulty;
 
   if (typeof headBangCallback === "function") {
     this._headBangCallback = headBangCallback;
@@ -34,7 +34,7 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
   this.body.x = x;
   this.body.y = y;
   this.body.visible = false;
-  this.body.scale.set(PowerGym.gameScale);
+  this.body.scale.set(PowerGym.GameData.scale);
 
   // Inner group for arms
   this.arms = game.add.group(this.body, "playerLvl2arms", false, true, Phaser.Physics.P2JS);
@@ -50,7 +50,7 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
 
   // Body on which animations are being played.
   // Position differs because animations sprite is larger then body group.
-  var gameScale = PowerGym.gameScale;
+  var gameScale = PowerGym.GameData.scale;
   this._bodyAnims = game.add.sprite(x - 37 * gameScale, y - 25 * gameScale, "playerLvl2BodyAnimations", 0);
   this._bodyAnims.scale.set(gameScale);
   switch (difficulty) {

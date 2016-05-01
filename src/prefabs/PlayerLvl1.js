@@ -15,7 +15,7 @@ PowerGym.Prefabs.PlayerLvl1 = function(game, x, y) {
   this._body = game.add.sprite(332, 346, "playerLvl1Body", 0, this.body);
   this._body.anchor.set(0.5);
 
-  this._bar = game.add.sprite(190, 168, "lvl1Bar" + PowerGym.GameData.lvl1Difficulty, 34, this.body);
+  this._bar = game.add.sprite(190, 168, "lvl1Bar" + PowerGym.UserData.lvl1Difficulty, 34, this.body);
   this._bar.anchor.set(0.5);
 
   this._bar.animations.add("pressRight2", [0, 1, 2, 3, 4]);
@@ -42,14 +42,14 @@ PowerGym.Prefabs.PlayerLvl1 = function(game, x, y) {
     this.isReady = true;
   }, this);
 
-  this.body.scale.set(PowerGym.gameScale);
+  this.body.scale.set(PowerGym.GameData.scale);
   this.body.x = x;
   this.body.y = y;
 
   // Seperate invisible fall down body
-  var gScale = PowerGym.gameScale;
+  var gScale = PowerGym.GameData.scale;
   this._bodyFallDown = this.game.add.sprite(-22 * gScale, 160 * gScale, "playerLvl1FallDown", 3, this.bodyFallDown);
-  this._barFallDown = this.game.add.sprite(-85 * gScale, 106 * gScale, "lvl1Bar" + PowerGym.GameData.lvl1Difficulty + "FallDown", 3, this.bodyFallDown);
+  this._barFallDown = this.game.add.sprite(-85 * gScale, 106 * gScale, "lvl1Bar" + PowerGym.UserData.lvl1Difficulty + "FallDown", 3, this.bodyFallDown);
   this._bodyFallDown.scale.set(gScale);
   this._barFallDown.scale.set(gScale);
 

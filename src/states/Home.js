@@ -5,13 +5,13 @@ PowerGym.States.Home.prototype = {
 
   create: function () {
 
-    this.gameScale = PowerGym.gameScale;
+    this.gameScale = PowerGym.GameData.scale;
 
     this.bgImage = this.add.image(0, 0, "bgHome");
     this.adjustGameObject("bg");
 
-    if (!PowerGym.GameData.playerProgress) {
-      PowerGym.GameData.playerProgress = {
+    if (!PowerGym.UserData.playerProgress) {
+      PowerGym.UserData.playerProgress = {
         torso: 1,
         arms: 1,
         legs: 1,
@@ -20,57 +20,57 @@ PowerGym.States.Home.prototype = {
     }
 
     // Player
-    this.player = new PowerGym.Prefabs.PlayerHome(this, 100, 100, PowerGym.GameData.playerProgress);
-    this.player.body.scale.set(PowerGym.gameScale);
+    this.player = new PowerGym.Prefabs.PlayerHome(this, 100, 100, PowerGym.UserData.playerProgress);
+    this.player.body.scale.set(PowerGym.GameData.scale);
     this.player.body.x = this.game.width / 4 - this.player.body.width / 2;
     this.player.body.y = this.game.height / 2 - this.player.body.height / 2;
 
     // Enlarging player muscles if there are some scores from levels. After
     // that setting all scores to zero.
-    var scores = PowerGym.GameData.Scores;
+    var scores = PowerGym.UserData.Scores;
     if (typeof scores.lvl1 != "undefined" && scores.lvl1 != 0) {
       var scaleAmount = scores.lvl1 / 4000;
       this.game.time.events.add(1000, function() {
         this.player.enlargeMuscleByAmount("torso", scaleAmount);
       }, this);
-      PowerGym.GameData.Stats.overallLvl1Score += scores.lvl1;
-      PowerGym.GameData.Stats.overallScore += scores.lvl1;
+      PowerGym.UserData.Stats.overallLvl1Score += scores.lvl1;
+      PowerGym.UserData.Stats.overallScore += scores.lvl1;
       scores.lvl1 = 0;
-      PowerGym.GameData.playerProgress.torso += scaleAmount;
+      PowerGym.UserData.playerProgress.torso += scaleAmount;
     }
     if (typeof scores.lvl2 != "undefined" && scores.lvl2 != 0) {
       var scaleAmount = scores.lvl2 / 4000;
       this.game.time.events.add(1000, function() {
         this.player.enlargeMuscleByAmount("arms", scaleAmount);
       }, this);
-      PowerGym.GameData.Stats.overallLvl2Score += scores.lvl2;
-      PowerGym.GameData.Stats.overallScore += scores.lvl2;
+      PowerGym.UserData.Stats.overallLvl2Score += scores.lvl2;
+      PowerGym.UserData.Stats.overallScore += scores.lvl2;
       scores.lvl2 = 0;
-      PowerGym.GameData.playerProgress.arms += scaleAmount;
+      PowerGym.UserData.playerProgress.arms += scaleAmount;
     }
     if (typeof scores.lvl3 != "undefined" && scores.lvl3 != 0) {
       var scaleAmount = scores.lvl3 / 4000;
       this.game.time.events.add(1000, function() {
         this.player.enlargeMuscleByAmount("legs", scaleAmount);
       }, this);
-      PowerGym.GameData.Stats.overallLvl3Score += scores.lvl3;
-      PowerGym.GameData.Stats.overallScore += scores.lvl3;
+      PowerGym.UserData.Stats.overallLvl3Score += scores.lvl3;
+      PowerGym.UserData.Stats.overallScore += scores.lvl3;
       scores.lvl3 = 0;
-      PowerGym.GameData.playerProgress.legs += scaleAmount;
+      PowerGym.UserData.playerProgress.legs += scaleAmount;
     }
     if (typeof scores.lvl4 != "undefined" && scores.lvl4 != 0) {
       var scaleAmount = scores.lvl4 / 4000;
       this.game.time.events.add(1000, function() {
         this.player.enlargeMuscleByAmount("head", scaleAmount);
       }, this);
-      PowerGym.GameData.Stats.overallLvl4Score += scores.lvl4;
-      PowerGym.GameData.Stats.overallScore += scores.lvl4;
+      PowerGym.UserData.Stats.overallLvl4Score += scores.lvl4;
+      PowerGym.UserData.Stats.overallScore += scores.lvl4;
       scores.lvl4 = 0;
-      PowerGym.GameData.playerProgress.head += scaleAmount;
+      PowerGym.UserData.playerProgress.head += scaleAmount;
     }
 
     // Menu level buttons
-    var btnScale = PowerGym.gameScale * 1.3,
+    var btnScale = PowerGym.GameData.scale * 1.3,
         btnImgSize = 100,
         margin = 10 * btnScale;
         row1 = 0,
@@ -124,9 +124,9 @@ PowerGym.States.Home.prototype = {
   render: function() {
 
     // If window was resized readjusting game objects
-    if (this.gameScale != PowerGym.gameScale) {
+    if (this.gameScale != PowerGym.GameData.scale) {
 
-      this.gameScale = PowerGym.gameScale;
+      this.gameScale = PowerGym.GameData.scale;
       var gameObjectsToAdjust = ["bg"];
       for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
         this.adjustGameObject(gameObjectsToAdjust[i]);

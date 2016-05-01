@@ -9,7 +9,7 @@ PowerGym.States.MainMenu.prototype = {
 
   create: function() {
 
-    this.gameScale = PowerGym.gameScale;
+    this.gameScale = PowerGym.GameData.scale;
 
     this.bgImage = this.add.sprite(0, 0, "bgMainMenu");
     this.adjustGameObject("bg");
@@ -72,9 +72,9 @@ PowerGym.States.MainMenu.prototype = {
   render: function() {
 
     // If window was resized readjusting game objects
-    if (this.gameScale != PowerGym.gameScale) {
+    if (this.gameScale != PowerGym.GameData.scale) {
 
-      this.gameScale = PowerGym.gameScale;
+      this.gameScale = PowerGym.GameData.scale;
       var gameObjectsToAdjust = ["bg", "titleAndPlayBtn", "copyrightText"];
       for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
         this.adjustGameObject(gameObjectsToAdjust[i]);

@@ -105,7 +105,7 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
   }
 
   // Positioning the whole window in the center of screen
-  this._menuWindow.scale.set(PowerGym.gameScale)
+  this._menuWindow.scale.set(PowerGym.GameData.scale)
   this._menuWindow.x = game.world.centerX - this._menuWindow.width / 2;
   this._menuWindow.y = game.world.centerY - this._menuWindow.height / 2;
 

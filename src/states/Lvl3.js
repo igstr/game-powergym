@@ -5,7 +5,7 @@ PowerGym.States.Lvl3.prototype = {
 
   create: function () {
 
-    this.gameScale = PowerGym.gameScale;
+    this.gameScale = PowerGym.GameData.scale;
 
     this.bgImage = this.add.image(0, 0, "bgMainMenu");
     this.adjustGameObject("bg");
@@ -37,9 +37,9 @@ PowerGym.States.Lvl3.prototype = {
   render: function() {
 
     // If window was resized readjusting game objects
-    if (this.gameScale != PowerGym.gameScale) {
+    if (this.gameScale != PowerGym.GameData.scale) {
 
-      this.gameScale = PowerGym.gameScale;
+      this.gameScale = PowerGym.GameData.scale;
       var gameObjectsToAdjust = ["bg", "btnGoBack"];
       for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
         this.adjustGameObject(gameObjectsToAdjust[i]);
