@@ -63,10 +63,6 @@ PowerGym.Prefabs.PlayerLvl1 = function(game, x, y) {
   this.body.x = x;
   this.body.y = y;
 
-  PowerGym.Keys.Spacebar.onDown.add(function() {
-    this.fallDown(false, "right");
-  }, this);
-
 };
 
 PowerGym.Prefabs.PlayerLvl1.prototype = {
