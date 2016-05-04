@@ -5,6 +5,9 @@ PowerGym.States.Lvl1.prototype = {
 
   create: function() {
 
+    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
+    this.gameScale = PowerGym.GameData.scale;
+
     this.userForce = {x: 0, y: 0};
     this.isPlaying = false;
     this.fallenDown = false;
@@ -19,45 +22,39 @@ PowerGym.States.Lvl1.prototype = {
     // BACKGROUND
     //-------------------
 
-    this.add.image(0, 0, "bgLvl1").scale.set(PowerGym.GameData.scale);
+    this.bgImage = this.add.image(0, 0, "bgLvl1");
 
     // PLAYER
     //-------------------
 
-    var playerX = this.game.width * 194 / 800,
-        playerY = this.game.height * 96 / 600;
-
-    this.player = new PowerGym.Prefabs.PlayerLvl1(this, playerX, playerY);
+    this.player = new PowerGym.Prefabs.PlayerLvl1(this, 0, 0);
     this.player.balance = 0.5;
     this.player.pressFrac = 1;
 
     // BALANCE INDICATOR
     //-------------------
 
-    this.balanceIndicatorAmplitude = 200;
-    var indicatorWidth = 8,
-        indicatorHeight = 8,
-        indicatorBgWidth = this.balanceIndicatorAmplitude + indicatorWidth;
+    this.indicatorAmplitude = 200;
+    this.indicatorWidth = 8;
+    this.indicatorHeight = 8;
+    var indicatorBgWidth = this.indicatorAmplitude + this.indicatorWidth;
 
     this.grBalanceIndicator = this.add.group(this.world, "balanceIndicator");
 
     this.balanceIndicator = this.add.graphics(0, 0, this.grBalanceIndicator);
     this.balanceIndicator.beginFill(0xFFFFFF);
-    this.balanceIndicator.drawRect(0, 0, indicatorWidth, indicatorHeight);
+    this.balanceIndicator.drawRect(0, 0, this.indicatorWidth, this.indicatorHeight);
     this.balanceIndicator.endFill();
-    this.balanceIndicator.x = this.balanceIndicatorAmplitude / 2;
+    this.balanceIndicator.x = this.indicatorAmplitude / 2;
     this.balanceIndicatorBg = this.add.graphics(0, 0, this.grBalanceIndicator);
     this.balanceIndicatorBg.beginFill(0xBFBFBF, 0.5);
-    this.balanceIndicatorBg.drawRect(0, 0, indicatorBgWidth, indicatorHeight);
+    this.balanceIndicatorBg.drawRect(0, 0, indicatorBgWidth, this.indicatorHeight);
     this.balanceIndicatorBg.endFill();
     this.grBalanceIndicator.moveDown(this.balanceIndicatorBg);
 
     // Enabling physics
     this.balanceIndicator.anchor = {x: 0.5, y: 0.5};
     this.physics.enable(this.balanceIndicator, Phaser.Physics.ARCADE, true);
-
-    // Scalling to screen width
-    this.grBalanceIndicator.scale.x = this.scale.width / (this.balanceIndicatorAmplitude + indicatorWidth);
 
     // YOYO
     //-------------------
@@ -98,8 +95,7 @@ PowerGym.States.Lvl1.prototype = {
     this.onScreenArrowUp.anchor.setTo(0.5, 0.5);
     this.onScreenArrowUp.rotation = Math.PI / 2;
 
-    this.grOnScreenArrows.y = 2 * this.scale.height / 7;
-    this.grOnScreenArrows.x = this.scale.width - this.scale.width / 6;
+    this.putEverythingInPlace();
 
     // INPUT KEYS
     //-------------------
@@ -170,12 +166,12 @@ PowerGym.States.Lvl1.prototype = {
       if (this.repsCounter > 0) {
         this.unbalanceAmplifier += this.player.pressFrac * 10;
       }
-      this.toX = this.yoyo.value * this.unbalanceAmplifier + (this.balanceIndicatorAmplitude - this.unbalanceAmplifier) / 2;
+      this.toX = this.yoyo.value * this.unbalanceAmplifier + (this.indicatorAmplitude - this.unbalanceAmplifier) / 2;
       this.physics.arcade.accelerateToXY(this.balanceIndicator, this.toX, this.balanceIndicator.y);
       this.balanceIndicator.body.velocity.x += this.userForce.x;
 
       // Checking if indicator is in his amplitude
-      if (this.balanceIndicator.x > this.balanceIndicatorAmplitude) {
+      if (this.balanceIndicator.x > this.indicatorAmplitude) {
         this.player.fallDown("right");
         this.fallenDown = true;
         this.endState();
@@ -198,7 +194,7 @@ PowerGym.States.Lvl1.prototype = {
       if (newPressFrac > 0.05 && newPressFrac < 0.95) {
         newPressFrac -= 0.01;
       }
-      var newBalance = this.balanceIndicator.x / this.balanceIndicatorAmplitude;
+      var newBalance = this.balanceIndicator.x / this.indicatorAmplitude;
 
       if (PowerGym.UserData.lvl1Difficulty == 2) {
         // Reducing player health if too long in bottom position
@@ -269,6 +265,7 @@ PowerGym.States.Lvl1.prototype = {
       this.menuLvlStats = new PowerGym.Prefabs.MenuLvlStats(this, function() {
         this.game.state.start("Home");
       }, stats, 4000);
+      this.placeGameObject("menuLvlStats");
 
       PowerGym.Keys.MouseL.onDown.add(function() {
         this.menuLvlStats.skipCurrentLine();
@@ -337,7 +334,75 @@ PowerGym.States.Lvl1.prototype = {
     }
   },
 
+  putEverythingInPlace: function() {
+
+    var gameObjectsToAdjust = [
+        "bg",
+        "player",
+        "balanceIndicator",
+        "texts",
+        "repsCounterText",
+        "onScreenArrows"
+    ];
+    if (this.menuLvlStats) {
+      gameObjectsToAdjust.push("menuLvlStats");
+    }
+    for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
+      this.placeGameObject(gameObjectsToAdjust[i]);
+    }
+
+  },
+
+  placeGameObject: function(name) {
+
+    switch (name) {
+      case "bg":
+        this.bgImage.scale.set(this.gameScale);
+        this.bgImage.x = this.game.width / 2 - this.bgImage.width / 2;
+        break;
+      case "player":
+        this.player.body.scale.set(this.gameScale);
+        this.player.body.x = this.game.width * 194 / 800;
+        this.player.body.x = this.game.width / 2
+          - 220 * this.gameScale;
+        this.player.body.y = 250 * this.gameScale;
+        break;
+      case "balanceIndicator":
+        this.grBalanceIndicator.scale.x = this.scale.width
+          / (this.indicatorAmplitude + this.indicatorWidth);
+      break;
+      case "repsCounterText":
+        this.repsCounterText.scale.set(this.gameScale);
+        this.repsCounterText.x = this.game.width / 2;
+        this.repsCounterText.y = 80 * this.gameScale;
+      break;
+      case "menuLvlStats":
+        this.menuLvlStats.window.scale.set(this.gameScale);
+        this.menuLvlStats.window.x = this.game.width / 2
+          - this.menuLvlStats.window.width / 2;
+        this.menuLvlStats.window.y = this.game.height / 2
+          - this.menuLvlStats.window.height / 2;
+      break;
+      case "onScreenArrows":
+        this.grOnScreenArrows.scale.set(this.gameScale);
+        this.grOnScreenArrows.y = 2 * this.game.height / 7;
+        this.grOnScreenArrows.x = this.game.width - this.game.width / 6;
+      break;
+      default:
+    }
+
+  },
+
   render: function() {
+
+    // If window was resized readjusting game objects
+    if (this.gameAspectRatio != PowerGym.GameData.aspectRatio) {
+
+      this.gameAspectRatio = PowerGym.GameData.aspectRatio;
+      this.gameScale = PowerGym.GameData.scale;
+      this.putEverythingInPlace();
+
+    }
 
     if (PowerGym.DEBUG_MODE) {
       this.game.debug.text("player balance: " + this.player.balance, 32, 16);

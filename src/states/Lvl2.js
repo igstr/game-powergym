@@ -16,23 +16,23 @@ PowerGym.States.Lvl2.prototype = {
 
   create: function () {
 
+    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
+    this.gameScale = PowerGym.GameData.scale;
+
     // BACKGROUND
-    this.add.image(0, 0, "bgLvl2").scale.set(PowerGym.GameData.scale);
+    this.bgImage = this.add.image(0, 0, "bgLvl2");
 
     // PLAYER
 
-    var playerX = this.game.width * 314 / 800,
-        playerY = this.game.height * 160 / 600;
-    this.player = new PowerGym.Prefabs.PlayerLvl2(this, playerX, playerY, this.headBangCallback, this);
+    this.player = new PowerGym.Prefabs.PlayerLvl2(this, 0, 0, this.headBangCallback, this);
 
     // GUI
-    this.repsCounterText = this.add.bitmapText(this.world.centerX, 80, "carrierCommand", this.repsCounter);
+    this.repsCounterText = this.add.bitmapText(0, 0, "carrierCommand", this.repsCounter);
     this.repsCounterText.anchor.setTo(0.5, 0.5);
 
-    var btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this),
-        margin = 20;
-    btnGoBack.x = margin;
-    btnGoBack.y = this.game.height - btnGoBack.height - margin;
+    this.btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this);
+
+    this.putEverythingInPlace();
 
     // INPUT
 
@@ -86,7 +86,69 @@ PowerGym.States.Lvl2.prototype = {
 
   },
 
+  putEverythingInPlace: function() {
+
+    var gameObjectsToAdjust = [
+        "bg",
+        "player",
+        "btnGoBack",
+        "repsCounterText",
+    ];
+    if (this.menuLvlStats) {
+      gameObjectsToAdjust.push("menuLvlStats");
+    }
+    for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
+      this.placeGameObject(gameObjectsToAdjust[i]);
+    }
+
+  },
+
+  placeGameObject: function(name) {
+
+    switch (name) {
+      case "bg":
+        this.bgImage.scale.set(this.gameScale);
+        this.bgImage.x = this.game.width / 2 - this.bgImage.width / 2;
+        break;
+      case "player":
+        this.player.body.scale.set(this.gameScale);
+        this.player.body.x = this.game.width / 2
+          - 86 * this.gameScale;
+        this.player.body.y = 160 * this.gameScale;
+        break;
+      case "repsCounterText":
+        this.repsCounterText.scale.set(this.gameScale);
+        this.repsCounterText.x = this.game.width / 2;
+        this.repsCounterText.y = 80 * this.gameScale;
+      break;
+      case "btnGoBack":
+        this.btnGoBack.scale.set(this.gameScale);
+        var margin = 20 * this.gameScale;
+        this.btnGoBack.x = margin;
+        this.btnGoBack.y = this.game.height - this.btnGoBack.height - margin;
+      break;
+      case "menuLvlStats":
+        this.menuLvlStats.window.scale.set(this.gameScale);
+        this.menuLvlStats.window.x = this.game.width / 2
+          - this.menuLvlStats.window.width / 2;
+        this.menuLvlStats.window.y = this.game.height / 2
+          - this.menuLvlStats.window.height / 2;
+      break;
+      default:
+    }
+
+  },
+
   render: function() {
+
+    // If window was resized readjusting game objects
+    if (this.gameAspectRatio != PowerGym.GameData.aspectRatio) {
+
+      this.gameAspectRatio = PowerGym.GameData.aspectRatio;
+      this.gameScale = PowerGym.GameData.scale;
+      this.putEverythingInPlace();
+
+    }
 
     if (PowerGym.DEBUG_MODE) {
       this.game.debug.text("leftArm rotation: " + this.player._leftArm.rotation, 8, 16);
@@ -139,6 +201,8 @@ PowerGym.States.Lvl2.prototype = {
       this.menuLvlStats = new PowerGym.Prefabs.MenuLvlStats(this, function() {
         this.game.state.start("Home");
       }, stats, 4000);
+      this.placeGameObject("menuLvlStats");
+      this.btnGoBack.visible = false;
 
       PowerGym.Keys.MouseL.onDown.add(function() {
         this.menuLvlStats.skipCurrentLine();

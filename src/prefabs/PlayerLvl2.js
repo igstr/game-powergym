@@ -31,28 +31,24 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
   // Main player body group which is not visible in the begining. It becomes
   // visible after get ready animations have been played.
   this.body = game.add.group(game.world, "playerLvl2");
-  this.body.x = x;
-  this.body.y = y;
-  this.body.visible = false;
-  this.body.scale.set(PowerGym.GameData.scale);
+  this._bodyPlay = game.add.group(this.body);
+  this._bodyPlay.visible = false;
 
   // Inner group for arms
-  this.arms = game.add.group(this.body, "playerLvl2arms", false, true, Phaser.Physics.P2JS);
+  this.arms = game.add.group(this._bodyPlay, "playerLvl2arms", false, true, Phaser.Physics.P2JS);
   this.arms.enableBodyDebug = PowerGym.DEBUG_MODE;
   var armsCollisionGroup = game.physics.p2.createCollisionGroup(),
       headCollisionGroup = game.physics.p2.createCollisionGroup();
 
   // BODY
 
-  this._body = game.add.sprite(95, 210, "playerLvl2Body", 0, this.body);
-  game.physics.p2.enable(this._body, false);
-  this._body.body.static = true;
+  this._bodySprite = game.add.sprite(95, 210, "playerLvl2Body", 0, this._bodyPlay);
+  game.physics.p2.enable(this._bodySprite, false);
+  this._bodySprite.body.static = true;
 
   // Body on which animations are being played.
   // Position differs because animations sprite is larger then body group.
-  var gameScale = PowerGym.GameData.scale;
-  this._bodyAnims = game.add.sprite(x - 37 * gameScale, y - 25 * gameScale, "playerLvl2BodyAnimations", 0);
-  this._bodyAnims.scale.set(gameScale);
+  this._bodyAnims = game.add.sprite(-38, -25, "playerLvl2BodyAnimations", 0, this.body);
   switch (difficulty) {
     case 2:
       this._bodyAnims.animations.add("idle", [15], 6, true);
@@ -76,7 +72,7 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
 
   // HEAD
 
-  this._head = game.add.sprite(92, 30, "playerLvl2Head", 0, this.body);
+  this._head = game.add.sprite(92, 30, "playerLvl2Head", 0, this._bodyPlay);
   game.physics.p2.enable(this._head, PowerGym.DEBUG_MODE);
   this._head.body.static = true;
   this._head.body.clearShapes();
@@ -102,11 +98,11 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
     item.body.setCollisionGroup(armsCollisionGroup);
     item.body.collides([armsCollisionGroup, headCollisionGroup]);
   }, this);
-  this.body.bringToTop(this.arms);
+  this._bodyPlay.bringToTop(this.arms);
 
   // Creating constrains between body and arms
-  game.physics.p2.createRevoluteConstraint(this._body, [26, -129], this._leftArm, [-25, -61]);
-  game.physics.p2.createRevoluteConstraint(this._body, [-39, -129], this._rightArm, [24, -64]);
+  game.physics.p2.createRevoluteConstraint(this._bodySprite, [26, -129], this._leftArm, [-25, -61]);
+  game.physics.p2.createRevoluteConstraint(this._bodySprite, [-39, -129], this._rightArm, [24, -64]);
 
   this.headBangCounter = 0;
   this.timeStarted = this.game.time.now;
@@ -115,9 +111,7 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
 
 PowerGym.Prefabs.PlayerLvl2.prototype = {
 
-  update: function() {
-
-  },
+  update: function() { },
 
   getReady: function() {
 
@@ -125,7 +119,7 @@ PowerGym.Prefabs.PlayerLvl2.prototype = {
     getReadyAnim.onComplete.add(function() {
       this.game.time.events.add(1000 / 6, function() {
         this._bodyAnims.visible = false;
-        this.body.visible = true;
+        this._bodyPlay.visible = true;
         this._leftArm.body.static = false;
         this._rightArm.body.static = false;
       }, this);
@@ -135,7 +129,7 @@ PowerGym.Prefabs.PlayerLvl2.prototype = {
 
   fallDown: function() {
 
-    this.body.visible = false;
+    this._bodyPlay.visible = false;
     this._bodyAnims.visible = true;
     this._bodyAnims.animations.play("fallDown");
 
@@ -149,7 +143,7 @@ PowerGym.Prefabs.PlayerLvl2.prototype = {
       if (!this._head.shakeAnimIsPlaying) {
         this._head.startShakeOutAnim(6, 1500);
 
-        console.log(body2.angularVelocity)
+        // console.log(body2.angularVelocity)
         // body2.sprite.key == ""
         // this.rightArmVelocity -= 10;
         // this.leftArmVelocity += 10;
