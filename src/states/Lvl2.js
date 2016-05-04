@@ -1,6 +1,12 @@
 
-PowerGym.States.Lvl2 = function(game) {
+PowerGym.States.Lvl2 = function(game) { };
 
+PowerGym.States.Lvl2.prototype = {
+
+  create: function () {
+
+    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
+    this.gameScale = PowerGym.GameData.scale;
     this.repsCounter = 0;
     this.failCounter = 0;
     this.leftArmReachedRepBottom = true;
@@ -10,14 +16,6 @@ PowerGym.States.Lvl2 = function(game) {
     this.stateStartTime = 0;
     this.controlsDisabled = false;
 
-};
-
-PowerGym.States.Lvl2.prototype = {
-
-  create: function () {
-
-    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
-    this.gameScale = PowerGym.GameData.scale;
 
     // BACKGROUND
     this.bgImage = this.add.image(0, 0, "bgLvl2");
