@@ -188,7 +188,7 @@ PowerGym.States.Lvl2.prototype = {
 
     var total = 0;
     for (var i = 0, l = stats.length; i < l; i++) {
-      total += stats[i].amount;
+      total += stats[i].amount * stats[i].multiplier;
     }
 
     PowerGym.UserData.Scores.lvl2 = total;
