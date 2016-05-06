@@ -6,10 +6,8 @@ PowerGym.States.Home.prototype = {
   create: function () {
 
     this.gameScale = PowerGym.GameData.scale;
-    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
 
     this.bgImage = this.add.image(0, 0, "bgHome");
-    this.adjustGameObject("bg");
 
     if (!PowerGym.UserData.playerProgress) {
       PowerGym.UserData.playerProgress = {
@@ -28,7 +26,6 @@ PowerGym.States.Home.prototype = {
         100,
         PowerGym.UserData.playerProgress
     );
-    this.adjustGameObject("player");
 
     // Enlarging player muscles if there are some scores from levels. After
     // that setting all scores to zero.
@@ -97,7 +94,13 @@ PowerGym.States.Home.prototype = {
       item.startFloat();
     });
 
-    this.adjustGameObject("lvlBtns");
+    // Button to force mobile mode
+    if (this.game.device.desktop) {
+      this.btnMobile = this.add.button(0, 0, "btnMobile", this.mobileCallback, this, 1, 0, 0, 0);
+      this.btnMobileOn = this.add.button(0, 0, "btnMobileOn", this.mobileCallback, this, 1, 0, 0, 0);
+    }
+
+    this.putEverythingInPlace();
 
   },
 
@@ -107,7 +110,31 @@ PowerGym.States.Home.prototype = {
 
   },
 
-  adjustGameObject: function(name) {
+  putEverythingInPlace: function() {
+
+    var gameObjects = ["bg", "player", "lvlBtns"];
+    if (this.menuLvlOptions && this.menuLvlOptions.window.visible) {
+      gameObjects.push("menuLvlOptions");
+    } else if (this.game.device.desktop) {
+      gameObjects.push("btnMobile");
+    }
+    for (var i = 0, l = gameObjects.length; i < l; i++) {
+      this.placeGameObject(gameObjects[i]);
+    }
+
+  },
+
+  mobileCallback: function() {
+
+    PowerGym.UserData.forceMobile = !PowerGym.UserData.forceMobile;
+    this.is
+    this.putEverythingInPlace();
+
+  },
+
+  placeGameObject: function(name) {
+
+    var isMobile = !this.game.device.desktop || PowerGym.UserData.forceMobile;
 
     switch (name) {
       case "bg":
@@ -115,7 +142,8 @@ PowerGym.States.Home.prototype = {
         this.bgImage.x = this.game.width / 2 - this.bgImage.width / 2;
         break;
       case "player":
-        this.player.body.scale.set(this.gameScale);
+        var playerScale = isMobile ? this.gameScale * 1.2 : this.gameScale;
+        this.player.body.scale.set(playerScale);
         this.player.body.x = this.game.width / 2
           - 164 * this.gameScale
           - this.player.body.width / 2;
@@ -123,31 +151,49 @@ PowerGym.States.Home.prototype = {
           - this.player.body.height / 2;
         break;
       case "lvlBtns":
-        this.grLvlBtns.scale.set(this.gameScale);
+        var xPixels = isMobile ? 185 : 165,
+            btnsScale = isMobile ? this.gameScale * 1.4 : this.gameScale;
+        this.grLvlBtns.scale.set(btnsScale);
         this.grLvlBtns.x = this.game.width / 2
-          + 164 * this.gameScale
+          + xPixels * this.gameScale
           - this.grLvlBtns.width / 2;
         this.grLvlBtns.y = this.game.height / 2
           - this.grLvlBtns.height / 2;
+        break;
+      case "btnMobile":
+        this.btnMobile.scale.set(this.gameScale);
+        this.btnMobileOn.scale.set(this.gameScale);
+
+        var margin = 10 * this.gameScale,
+            y = this.game.height - this.btnMobile.height - margin;
+
+        this.btnMobile.x = margin;
+        this.btnMobile.y = y;
+        this.btnMobileOn.x = margin;
+        this.btnMobileOn.y = y;
+        this.btnMobileOn.visible = PowerGym.UserData.forceMobile;
+        this.btnMobile.visible = !PowerGym.UserData.forceMobile;
+        break;
+      case "menuLvlOptions":
+        this.menuLvlOptions.window.scale.set(this.gameScale);
+        this.menuLvlOptions.window.x = this.game.width / 2
+          - this.menuLvlOptions.window.width / 2;
+        this.menuLvlOptions.window.y = this.game.height / 2
+          - this.menuLvlOptions.window.height / 2;
         break;
       default:
     }
 
   },
 
+  resize: function() {
+
+    this.gameScale = PowerGym.GameData.scale;
+    this.putEverythingInPlace();
+
+  },
+
   render: function() {
-
-    // If window was resized readjusting game objects
-    if (this.gameAspectRatio != PowerGym.GameData.aspectRatio) {
-
-      this.gameAspectRatio = PowerGym.GameData.aspectRatio;
-      this.gameScale = PowerGym.GameData.scale;
-
-      var gameObjectsToAdjust = ["bg", "player", "lvlBtns"];
-      for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
-        this.adjustGameObject(gameObjectsToAdjust[i]);
-      }
-    }
 
     if (PowerGym.DEBUG_MODE) {
       // this.game.debug.text("aspect ratio: " + this.game.scale.aspectRatio, 32, 16);
@@ -166,30 +212,35 @@ PowerGym.States.Home.prototype = {
 
   disableMenuLvlOptions: function() {
 
+    this.menuLvlOptions.window.visible = false;
+    this.menuLvlOptions.window.destroy(true, false);
     this.menuLvlOptions.destroy();
-    this.enableLvlButtons();
+    this.enableStateBtns();
+    this.putEverythingInPlace();
 
   },
 
   btnLvl1Callback: function() {
 
-    this.disableLvlButtons();
+    this.disableStateBtns();
     this.menuLvlOptions = new PowerGym.Prefabs.MenuLvlOptions(this, 1, function() {
 
       this.state.start("Lvl1");
 
     }, this.disableMenuLvlOptions);
+    this.placeGameObject("menuLvlOptions");
 
   },
 
   btnLvl2Callback: function() {
 
-    this.disableLvlButtons();
+    this.disableStateBtns();
     this.menuLvlOptions = new PowerGym.Prefabs.MenuLvlOptions(this, 2, function() {
 
       this.state.start("Lvl2");
 
     }, this.disableMenuLvlOptions);
+    this.placeGameObject("menuLvlOptions");
 
   },
 
@@ -205,15 +256,29 @@ PowerGym.States.Home.prototype = {
 
   },
 
-  disableLvlButtons: function() {
+  disableStateBtns: function() {
 
     this.grLvlBtns.visible = false;
+    if (this.game.device.desktop) {
+      if (PowerGym.UserData.forceMobile) {
+        this.btnMobileOn.visible = false;
+      } else {
+        this.btnMobile.visible = false;
+      }
+    }
 
   },
 
-  enableLvlButtons: function() {
+  enableStateBtns: function() {
 
     this.grLvlBtns.visible = true;
+    if (this.game.device.desktop) {
+      if (PowerGym.UserData.forceMobile) {
+        this.btnMobileOn.visible = true;
+      } else {
+        this.btnMobile.visible = true;
+      }
+    }
 
   }
 

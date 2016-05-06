@@ -10,10 +10,8 @@ PowerGym.States.MainMenu.prototype = {
   create: function() {
 
     this.gameScale = PowerGym.GameData.scale;
-    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
 
     this.bgImage = this.add.sprite(0, 0, "bgMainMenu");
-    this.adjustGameObject("bg");
 
     this.titleAndPlayBtn = this.add.group(this.world);
     this.title = this.add.group(this.titleAndPlayBtn, "gameTitleMainMenu");
@@ -30,23 +28,27 @@ PowerGym.States.MainMenu.prototype = {
     PowerGym.Mixins.withFloatAnim.call(this.btnPlay);
     this.btnPlay.startFloat();
 
-    this.adjustGameObject("titleAndPlayBtn");
 
     this.copyrightText = this.game.add.bitmapText(0, 0, "carrierCommand", "A game by Ignas Strimaitis", 8);
-    this.adjustGameObject("copyrightText");
+
+    this.putEverythingInPlace();
 
   },
 
   update: function() { },
 
-  adjustGameObject: function(name) {
+  placeGameObject: function(name) {
+
+    var isMobile = !this.game.device.desktop || PowerGym.UserData.forceMobile;
 
     switch (name) {
       case "titleAndPlayBtn":
         var marginTitlePlayBtn = 15 * this.gameScale;
 
-        this.title.scale.set(1.3 * this.gameScale);
-        this.btnPlay.scale.set(this.gameScale);
+        var titleScale = isMobile ? 1.8 * this.gameScale : 1.3 * this.gameScale;
+        this.title.scale.set(titleScale);
+        var btnPlayScale = isMobile ? this.gameScale * 1.6 : this.gameScale;
+        this.btnPlay.scale.set(btnPlayScale);
         this.btnPlay.y = this.title.height + marginTitlePlayBtn * 2;
         this.btnPlay.x = this.title.width / 2 - this.btnPlay.width / 2;
         if (typeof this.btnPlay.setFloatStartPosition == "function") {
@@ -62,29 +64,34 @@ PowerGym.States.MainMenu.prototype = {
         this.bgImage.x = this.game.width / 2 - this.bgImage.width / 2;
         break;
       case "copyrightText":
+        this.copyrightText.fontSize = 8;
         var margin = 25 * this.gameScale;
         this.copyrightText.y = this.game.height - this.copyrightText.fontSize - margin;
         this.copyrightText.x = margin;
+        this.
         break;
       default:
     }
 
   },
 
-  render: function() {
+  putEverythingInPlace: function() {
 
-    // If window was resized readjusting game objects
-    if (this.gameAspectRatio != PowerGym.GameData.aspectRatio) {
-
-      this.gameAspectRatio = PowerGym.GameData.aspectRatio;
-      this.gameScale = PowerGym.GameData.scale;
-      var gameObjectsToAdjust = ["bg", "titleAndPlayBtn", "copyrightText"];
-      for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
-        this.adjustGameObject(gameObjectsToAdjust[i]);
-      }
+    var gameObjectsToAdjust = ["bg", "titleAndPlayBtn", "copyrightText"];
+    for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
+      this.placeGameObject(gameObjectsToAdjust[i]);
     }
 
   },
+
+  resize: function() {
+
+    this.gameScale = PowerGym.GameData.scale;
+    this.putEverythingInPlace();
+
+  },
+
+  render: function() { },
 
   btnPlayCallback: function() {
 

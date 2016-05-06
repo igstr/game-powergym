@@ -69,6 +69,8 @@ PowerGym.States.Preloader.prototype = {
     this.load.spritesheet("btnArrow", "assets/buttons/btn-arrow45x45.png", 45, 45);
     this.load.image("btnGoBack", "assets/buttons/btn-go_back.png");
     this.load.spritesheet("btnPlay", "assets/buttons/btn-play.png", 160, 85);
+    this.load.spritesheet("btnMobile", "assets/buttons/btn-mobile100x100.png", 100, 100);
+    this.load.spritesheet("btnMobileOn", "assets/buttons/btn-mobile-on100x100.png", 100, 100);
 
     // Menus
     this.load.image("menuLvlOptionsBg", "assets/menus/lvl_options/bg.png");

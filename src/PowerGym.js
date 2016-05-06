@@ -39,7 +39,9 @@ var PowerGym = {
       overallFails: 0,
       totalWorkoutTime: 0,
 
-    }
+    },
+
+    forceMobile: false
 
   },
 
