@@ -36,9 +36,12 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
 
   // Groups
   this.window = game.add.group(game.world, "menuLvlStatsWindow");
-  game.add.sprite(0, 0, "menuLvlStatsBg", 0, this.window);
   this._statsMeter = game.add.group(this.window, "menuLvlStatsMeter");
   this._windowTexts = game.add.group(this.window, "menuLvlStatsTexts");
+
+  // BG
+  this._windowSprite = game.add.sprite(0, 0, "menuLvlStatsBg", 0, this.window);
+  this.window.sendToBack(this._windowSprite);
 
   // Next Button
   var btnNext = game.add.button(0, 0, "btnNext", nextCallback, game, 1, 0, 2, 0, this.window);
@@ -67,7 +70,7 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
 
     for (var i = 0, l = this.params.length; i < l; i++) {
 
-      var x = this.window.width / 7,
+      var x = this.window.width / 9,
           y;
 
       // If previuos one exist
@@ -91,12 +94,12 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
       this.total += this.params[i].amount * this.params[i].multiplier;
     }
 
-    var xForTotal = this.window.width / 7,
+    var xForTotal = this.window.width / 9,
         // yForTotal = this._statsMeter.y + this._statsMeter.height - textSize * 1.5;
         yForTotal = this.texts[this.texts.length - 1].paramName.y + textSize * 4;
 
     this.textTotal = {};
-    this.textTotal.paramName = game.add.bitmapText(xForTotal, yForTotal, "carrierCommand", "Total: ", textSize, this._windowTexts);
+    this.textTotal.paramName = game.add.bitmapText(xForTotal, yForTotal, "carrierCommand", "Total score: ", textSize, this._windowTexts);
     this.textTotal.paramNum = game.add.bitmapText(this._statsMeter.x + 25, yForTotal, "carrierCommand", this.total.toString(), textSize, this._windowTexts);
     this.textTotal.paramNum.anchor.x = 1;
     this.textTotal.paramName.tint = 0;

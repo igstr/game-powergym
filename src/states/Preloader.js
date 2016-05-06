@@ -56,6 +56,8 @@ PowerGym.States.Preloader.prototype = {
     this.load.physics("playerLvl2ArmsPhysics", "assets/sprites/lvl2/player/arms-physics.json");
     this.load.spritesheet("playerLvl2BodyAnimations", "assets/sprites/lvl2/player/player260x400.png", 260, 400);
 
+    this.load.spritesheet("playerLvl3Run", "assets/sprites/lvl3/player/run200x320.png", 200, 320);
+
     // Icons
     this.load.image("whiteArrow", "assets/sprites/arrow.png");
 
@@ -86,6 +88,10 @@ PowerGym.States.Preloader.prototype = {
     this.load.image("bgHome", "assets/sprites/home/bg.png");
     this.load.image("bgLvl1", "assets/sprites/lvl1/bg.png");
     this.load.image("bgLvl2", "assets/sprites/lvl2/bg.png");
+    this.load.image("bgLvl3", "assets/sprites/lvl3/bg.png");
+
+    this.load.spritesheet("treadmillTrack", "assets/sprites/lvl3/treadmill_track500x75.png", 500, 75);
+
   },
 
   create: function () {
