@@ -8,7 +8,8 @@ PowerGym.Prefabs.PlayerHome = function(game, x, y, scaleParams) {
       torso: 1,
       arms: 1,
       legs: 1,
-      head: 1
+      head: 1,
+      shorts: 1
     };
   }
 
@@ -46,6 +47,7 @@ PowerGym.Prefabs.PlayerHome = function(game, x, y, scaleParams) {
 
   this._shorts = game.add.sprite(80, 239, "playerHomeShorts", 0, this.body);
   this._shorts.anchor.set(0.5);
+  this._shorts.scale.x = scaleParams.shorts;
 
   this._headShape.animations.add("idle", [3, 2, 1, 0], 1, true).play();
   this._torso.animations.add("idle", [3, 2, 1, 0], 1, true).play();
@@ -106,6 +108,9 @@ PowerGym.Prefabs.PlayerHome.prototype.enlargeMuscleByAmount = function(muscle, a
     case "legs":
       playEnlargeAnim.call(this, this._leftLeg, amount);
       playEnlargeAnim.call(this, this._rightLeg, amount);
+      break;
+    case "shorts":
+      playEnlargeAnim.call(this, this._shorts, amount);
       break;
     case "head":
       playEnlargeAnim.call(this, this._headShape, amount);

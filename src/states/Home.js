@@ -16,7 +16,8 @@ PowerGym.States.Home.prototype = {
         torso: 1,
         arms: 1,
         legs: 1,
-        head: 1
+        head: 1,
+        shorts: 1
       };
     }
 
@@ -56,11 +57,13 @@ PowerGym.States.Home.prototype = {
       var scaleAmount = scores.lvl3 / 4000;
       this.game.time.events.add(1000, function() {
         this.player.enlargeMuscleByAmount("legs", scaleAmount);
+        this.player.enlargeMuscleByAmount("shorts", scaleAmount / 4);
       }, this);
       PowerGym.UserData.Stats.overallLvl3Score += scores.lvl3;
       PowerGym.UserData.Stats.overallScore += scores.lvl3;
       scores.lvl3 = 0;
       PowerGym.UserData.playerProgress.legs += scaleAmount;
+      PowerGym.UserData.playerProgress.shorts += scaleAmount / 4;
     }
     if (typeof scores.lvl4 != "undefined" && scores.lvl4 != 0) {
       var scaleAmount = scores.lvl4 / 4000;
@@ -95,10 +98,6 @@ PowerGym.States.Home.prototype = {
     });
 
     this.adjustGameObject("lvlBtns");
-
-    // Input
-    PowerGym.Keys.Up.onDown.add(this.player.scaleEverythingUp, this.player);
-    PowerGym.Keys.Down.onDown.add(this.player.scaleEverythingDown, this.player);
 
   },
 
