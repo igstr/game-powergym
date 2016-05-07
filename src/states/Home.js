@@ -115,7 +115,8 @@ PowerGym.States.Home.prototype = {
     var gameObjects = ["bg", "player", "lvlBtns"];
     if (this.menuLvlOptions && this.menuLvlOptions.window.visible) {
       gameObjects.push("menuLvlOptions");
-    } else if (this.game.device.desktop) {
+    }
+    if (this.game.device.desktop && !this.menuLvlOptions) {
       gameObjects.push("btnMobile");
     }
     for (var i = 0, l = gameObjects.length; i < l; i++) {
@@ -210,13 +211,19 @@ PowerGym.States.Home.prototype = {
 
   },
 
-  disableMenuLvlOptions: function() {
+  cancelMenuLvlOptions: function() {
 
-    this.menuLvlOptions.window.visible = false;
-    this.menuLvlOptions.window.destroy(true, false);
-    this.menuLvlOptions.destroy();
+    this.destroyMenuLvlOptions();
     this.enableStateBtns();
     this.putEverythingInPlace();
+
+  },
+
+  destroyMenuLvlOptions: function() {
+
+    this.menuLvlOptions.window.destroy();
+    this.menuLvlOptions.destroy();
+    this.menuLvlOptions = null;
 
   },
 
@@ -225,9 +232,10 @@ PowerGym.States.Home.prototype = {
     this.disableStateBtns();
     this.menuLvlOptions = new PowerGym.Prefabs.MenuLvlOptions(this, 1, function() {
 
+      this.destroyMenuLvlOptions();
       this.state.start("Lvl1");
 
-    }, this.disableMenuLvlOptions);
+    }, this.cancelMenuLvlOptions);
     this.placeGameObject("menuLvlOptions");
 
   },
@@ -237,9 +245,10 @@ PowerGym.States.Home.prototype = {
     this.disableStateBtns();
     this.menuLvlOptions = new PowerGym.Prefabs.MenuLvlOptions(this, 2, function() {
 
+      this.destroyMenuLvlOptions();
       this.state.start("Lvl2");
 
-    }, this.disableMenuLvlOptions);
+    }, this.cancelMenuLvlOptions);
     this.placeGameObject("menuLvlOptions");
 
   },
