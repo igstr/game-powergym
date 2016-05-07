@@ -103,10 +103,10 @@ PowerGym.States.Lvl1.prototype = {
     } else {
       var onScreenArrowMargin = 5;
       this.grOnScreenArrowsRight = this.add.group(this.grOnScreenArrows, "onScreenArrowButtons");
-      this.onScreenArrowDown = this.add.button(0, 0, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrowsRight);
+      this.onScreenArrowDown = this.add.button(0, 0, "btnArrow", this.getReady, this, 1, 0, 2, 0, this.grOnScreenArrowsRight);
       this.onScreenArrowDown.anchor.setTo(0.5, 0.5);
       this.onScreenArrowDown.rotation = -Math.PI / 2;
-      this.onScreenArrowUp = this.add.button(0, -this.onScreenArrowDown.width - onScreenArrowMargin, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrowsRight);
+      this.onScreenArrowUp = this.add.button(0, -this.onScreenArrowDown.width - onScreenArrowMargin, "btnArrow", this.getReady, this, 1, 0, 2, 0, this.grOnScreenArrowsRight);
       this.onScreenArrowUp.anchor.setTo(0.5, 0.5);
       this.onScreenArrowUp.rotation = Math.PI / 2;
 
@@ -323,7 +323,9 @@ PowerGym.States.Lvl1.prototype = {
       this.onScreenArrowLeft.frame = 2;
     } else if (PowerGym.Keys.Left.isDown) {
       this.onScreenArrowLeft.frame = 2;
-    } else if (this.onScreenArrowLeft.input.pointerOver(this.input.activePointer.id)) {
+    } else if (this.onScreenArrowLeft.input.pointerOver(this.input.activePointer.id)
+        && !this.isMobile
+    ) {
       this.game.canvas.style.cursor = "pointer";
       this.onScreenArrowLeft.frame = 1;
     } else if (this.onScreenArrowLeft.input.pointerOut(this.input.activePointer.id)
@@ -341,7 +343,9 @@ PowerGym.States.Lvl1.prototype = {
       this.onScreenArrowRight.frame = 2;
     } else if (PowerGym.Keys.Right.isDown) {
       this.onScreenArrowRight.frame = 2;
-    } else if (this.onScreenArrowRight.input.pointerOver(this.input.activePointer.id)) {
+    } else if (this.onScreenArrowRight.input.pointerOver(this.input.activePointer.id)
+        && !this.isMobile
+    ) {
       this.game.canvas.style.cursor = "pointer";
       this.onScreenArrowRight.frame = 1;
     } else if (this.onScreenArrowRight.input.pointerOut(this.input.activePointer.id)
