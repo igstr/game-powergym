@@ -5,8 +5,9 @@ PowerGym.States.Lvl1.prototype = {
 
   create: function() {
 
-    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
     this.gameScale = PowerGym.GameData.scale;
+    this.aspectRatio = PowerGym.GameData.aspectRatio;
+    this.isMobile = !this.game.device.desktop || PowerGym.UserData.forceMobile;
 
     this.userForce = {x: 0, y: 0};
     this.isPlaying = false;
@@ -73,27 +74,52 @@ PowerGym.States.Lvl1.prototype = {
     this.repsCounterText.anchor.setTo(0.5, 0.5);
 
     // Go back button
-    // var btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this),
-    //     btnGoBackMargin = 20;
-    // btnGoBack.x = btnGoBackMargin;
-    // btnGoBack.y = this.scale.height - btnGoBack.height - btnGoBackMargin;
+    this.btnGoBack = this.add.button(
+        0,
+        0,
+        "btnGoBack",
+        this.btnGoBackCallback,
+        this
+    );
+
 
     // On screen arrows
-    var onScreenArrowMargin = 5;
     this.grOnScreenArrows = this.add.group(this.world, "onScreenArrowButtons");
-    this.onScreenArrowDown = this.add.button(0, 0, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrows);
-    this.onScreenArrowDown.anchor.setTo(0.5, 0.5);
-    this.onScreenArrowDown.rotation = -Math.PI / 2;
-    this.onScreenArrowRight = this.add.sprite(this.onScreenArrowDown.width + onScreenArrowMargin, 0, "btnArrow", 0, this.grOnScreenArrows);
-    this.onScreenArrowRight.anchor.setTo(0.5, 0.5);
-    this.onScreenArrowRight.inputEnabled = true;
-    this.onScreenArrowRight.rotation = Math.PI;
-    this.onScreenArrowLeft = this.add.sprite(-this.onScreenArrowDown.width - onScreenArrowMargin, 0, "btnArrow", 0, this.grOnScreenArrows);
-    this.onScreenArrowLeft.anchor.setTo(0.5, 0.5);
-    this.onScreenArrowLeft.inputEnabled = true;
-    this.onScreenArrowUp = this.add.button(0, -this.onScreenArrowDown.width - onScreenArrowMargin, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrows);
-    this.onScreenArrowUp.anchor.setTo(0.5, 0.5);
-    this.onScreenArrowUp.rotation = Math.PI / 2;
+    if (!this.isMobile) {
+      var onScreenArrowMargin = 5;
+      this.onScreenArrowDown = this.add.button(0, 0, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrows);
+      this.onScreenArrowDown.anchor.setTo(0.5, 0.5);
+      this.onScreenArrowDown.rotation = -Math.PI / 2;
+      this.onScreenArrowRight = this.add.sprite(this.onScreenArrowDown.width + onScreenArrowMargin, 0, "btnArrow", 0, this.grOnScreenArrows);
+      this.onScreenArrowRight.anchor.setTo(0.5, 0.5);
+      this.onScreenArrowRight.inputEnabled = true;
+      this.onScreenArrowRight.rotation = Math.PI;
+      this.onScreenArrowLeft = this.add.sprite(-this.onScreenArrowDown.width - onScreenArrowMargin, 0, "btnArrow", 0, this.grOnScreenArrows);
+      this.onScreenArrowLeft.anchor.setTo(0.5, 0.5);
+      this.onScreenArrowLeft.inputEnabled = true;
+      this.onScreenArrowUp = this.add.button(0, -this.onScreenArrowDown.width - onScreenArrowMargin, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrows);
+      this.onScreenArrowUp.anchor.setTo(0.5, 0.5);
+      this.onScreenArrowUp.rotation = Math.PI / 2;
+    } else {
+      var onScreenArrowMargin = 5;
+      this.grOnScreenArrowsRight = this.add.group(this.grOnScreenArrows, "onScreenArrowButtons");
+      this.onScreenArrowDown = this.add.button(0, 0, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrowsRight);
+      this.onScreenArrowDown.anchor.setTo(0.5, 0.5);
+      this.onScreenArrowDown.rotation = -Math.PI / 2;
+      this.onScreenArrowUp = this.add.button(0, -this.onScreenArrowDown.width - onScreenArrowMargin, "btnArrow", this.getReady, this, 1, 0, 2, 1, this.grOnScreenArrowsRight);
+      this.onScreenArrowUp.anchor.setTo(0.5, 0.5);
+      this.onScreenArrowUp.rotation = Math.PI / 2;
+
+      this.grOnScreenArrowsLeft = this.add.group(this.grOnScreenArrows, "onScreenArrowButtons");
+      this.onScreenArrowLeft = this.add.sprite(0, 0, "btnArrow", 0, this.grOnScreenArrowsLeft);
+      this.onScreenArrowLeft.anchor.setTo(0.5, 0.5);
+      this.onScreenArrowLeft.inputEnabled = true;
+      this.onScreenArrowRight = this.add.sprite(this.onScreenArrowDown.width + onScreenArrowMargin, 0, "btnArrow", 0, this.grOnScreenArrowsLeft);
+      this.onScreenArrowRight.anchor.setTo(0.5, 0.5);
+      this.onScreenArrowRight.inputEnabled = true;
+      this.onScreenArrowRight.rotation = Math.PI;
+
+    }
 
     this.putEverythingInPlace();
 
@@ -130,7 +156,9 @@ PowerGym.States.Lvl1.prototype = {
     this.repsCounterText.text = this.repsCounter;
 
     // Updating on screen arrow states
-    this.manageOnScreenArrowsStates();
+    if (!this.fallenDown) {
+      this.manageOnScreenArrowsStates();
+    }
 
     // Wait untill player is ready and add input keys
     if (!this.isPlaying && this.player.isReady == true) {
@@ -224,6 +252,15 @@ PowerGym.States.Lvl1.prototype = {
 
     this.balanceIndicator.body.moves = false;
 
+    this.btnGoBack.destroy();
+
+    PowerGym.Keys.Up.onDown.remove(this.pressUp);
+    PowerGym.Keys.Down.onDown.remove(this.pressDown);
+    this.onScreenArrowDown.onInputDown.remove(this.pressDown);
+    this.onScreenArrowUp.onInputDown.remove(this.pressUp);
+    this.grOnScreenArrows.destroy();
+    // this.grOnScreenArrows.visible = false;
+
     PowerGym.Keys.Up.onDown.remove(this.pressUp, this);
     PowerGym.Keys.Down.onDown.remove(this.pressDown, this);
     this.onScreenArrowDown.onInputDown.remove(this.pressDown, this);
@@ -259,9 +296,10 @@ PowerGym.States.Lvl1.prototype = {
 
     PowerGym.UserData.Scores.lvl1 = total;
 
-    // Stats
+    // Show play stats
     this.game.time.events.add(2000, function() {
 
+      // Menu for the stats
       this.menuLvlStats = new PowerGym.Prefabs.MenuLvlStats(this, function() {
         this.game.state.start("Home");
       }, stats, 4000);
@@ -336,19 +374,20 @@ PowerGym.States.Lvl1.prototype = {
 
   putEverythingInPlace: function() {
 
-    var gameObjectsToAdjust = [
+    var gameObjects = [
         "bg",
         "player",
+        "btnGoBack",
         "balanceIndicator",
         "texts",
         "repsCounterText",
         "onScreenArrows"
     ];
     if (this.menuLvlStats) {
-      gameObjectsToAdjust.push("menuLvlStats");
+      gameObjects.push("menuLvlStats");
     }
-    for (var i = 0, l = gameObjectsToAdjust.length; i < l; i++) {
-      this.placeGameObject(gameObjectsToAdjust[i]);
+    for (var i = 0, l = gameObjects.length; i < l; i++) {
+      this.placeGameObject(gameObjects[i]);
     }
 
   },
@@ -371,6 +410,13 @@ PowerGym.States.Lvl1.prototype = {
         this.grBalanceIndicator.scale.x = this.scale.width
           / (this.indicatorAmplitude + this.indicatorWidth);
       break;
+      case "btnGoBack":
+        var margin = 20 * this.gameScale
+            btnScale = this.isMobile ? this.gameScale * 2 : this.gameScale;
+        this.btnGoBack.scale.set(btnScale);
+        this.btnGoBack.x = margin;
+        this.btnGoBack.y = this.game.height - this.btnGoBack.height - margin;
+        break;
       case "repsCounterText":
         this.repsCounterText.scale.set(this.gameScale);
         this.repsCounterText.x = this.game.width / 2;
@@ -384,25 +430,54 @@ PowerGym.States.Lvl1.prototype = {
           - this.menuLvlStats.window.height / 2;
       break;
       case "onScreenArrows":
-        this.grOnScreenArrows.scale.set(this.gameScale);
-        this.grOnScreenArrows.y = 2 * this.game.height / 7;
-        this.grOnScreenArrows.x = this.game.width - this.game.width / 6;
+        if (!this.isMobile) {
+          this.grOnScreenArrows.scale.set(this.gameScale);
+          this.grOnScreenArrows.y = 2 * this.game.height / 7;
+          this.grOnScreenArrows.x = this.game.width - this.game.width / 6;
+        } else {
+          var screenEdgeMargin = 20,
+              btnScale = this.gameScale * this.aspectRatio * 1.8;
+
+          this.grOnScreenArrowsLeft.scale.set(btnScale);
+          this.grOnScreenArrowsRight.scale.set(btnScale);
+
+          this.grOnScreenArrowsLeft.x = this.onScreenArrowLeft.width
+            * this.gameScale
+            * this.aspectRatio
+            + screenEdgeMargin;
+          this.grOnScreenArrowsLeft.y = this.game.height / 2
+            - 50 * this.gameScale * this.aspectRatio
+            + this.grOnScreenArrowsLeft.height / 2;
+          this.grOnScreenArrowsRight.x = this.game.width
+            - this.grOnScreenArrowsRight.width / 2
+            - screenEdgeMargin;
+          this.grOnScreenArrowsRight.y = this.game.height / 2
+            - 50 * this.gameScale * this.aspectRatio
+            + this.grOnScreenArrowsRight.height / 2;
+
+        }
       break;
       default:
     }
 
   },
 
+  resize: function(width, height) {
+
+    this.gameScale = PowerGym.GameData.scale;
+    this.aspectRatio = PowerGym.GameData.aspectRatio;
+    this.putEverythingInPlace();
+
+  },
+
+  // switchMobileDesktop: function() { },
+
   render: function() {
 
-    // If window was resized readjusting game objects
-    if (this.gameAspectRatio != PowerGym.GameData.aspectRatio) {
-
-      this.gameAspectRatio = PowerGym.GameData.aspectRatio;
-      this.gameScale = PowerGym.GameData.scale;
-      this.putEverythingInPlace();
-
-    }
+    // if (this.forceMobile != PowerGym.UserData.forceMobile) {
+    //   this.forceMobile = PowerGym.UserData.forceMobile;
+    //   this.switchMobileDesktop();
+    // }
 
     if (PowerGym.DEBUG_MODE) {
       this.game.debug.text("player balance: " + this.player.balance, 32, 16);
