@@ -6,6 +6,7 @@ PowerGym.States.Lvl3.prototype = {
   create: function () {
 
     this.gameScale = PowerGym.GameData.scale;
+    this.isMobile = !this.game.device.desktop || PowerGym.UserData.forceMobile;
 
     this.fallingOff = false;
     this.playStartTime = 0;
@@ -19,6 +20,8 @@ PowerGym.States.Lvl3.prototype = {
     this.maxCps = 0;
     this.avgCps = 0;
     this.totalClicks = 0;
+    this.isPlaying = false;
+    this.reachedTreadmillFront = false; // used when player increases speed
 
     this.maxPos = new Phaser.Point();
     this.minPos = new Phaser.Point();
@@ -48,6 +51,10 @@ PowerGym.States.Lvl3.prototype = {
 
 
     // GUI
+
+    // Treadmill lvl number text
+    this.treadmillLvlText = this.add.bitmapText(0, 0, "carrierCommand", this.treadmillSpeedLvl);
+    this.treadmillLvlText.anchor.setTo(0.5, 0.5);
 
     this.btnGoBack = this.add.button(
         0,
@@ -98,8 +105,8 @@ PowerGym.States.Lvl3.prototype = {
     if (this.isPlaying && !this.fallingOff) {
 
       // Updating velocity to add value. Player velocity decreases by the
-      // treadmill level number per treadmill level duration,
-      this.velocityToAdd -=  this.treadmillSpeedLvl * this.time.physicsElapsed
+      // treadmill level number (+5) per treadmill level duration,
+      this.velocityToAdd -=  (5 + this.treadmillSpeedLvl) * this.time.physicsElapsed
         / (this.treadmillLvlduration / 1000);
 
       // Calculate player position
@@ -112,6 +119,11 @@ PowerGym.States.Lvl3.prototype = {
       if (this.playerPosWorld.x > this.maxPos.x) {
         // No more positive velocity
         this.velocityToAdd = Math.min(0, this.velocityToAdd);
+
+        if (!this.reachedTreadmillFront) {
+          this.reachedTreadmillFront = true;
+          this.increaseTreadmillSpeedLvl();
+        }
       }
       if (this.playerPosWorld.x < this.minPos.x) {
 
@@ -138,6 +150,13 @@ PowerGym.States.Lvl3.prototype = {
       );
       this.player.runSpeed = this.playerRunSpeed * 2;
 
+      // Player moves away from front by 10px he could increase speed again.
+      if (this.reachedTreadmillFront
+          && this.playerPosWorld.x < this.maxPos.x - 10
+      ) {
+        this.reachedTreadmillFront = false;
+      }
+
     }
 
   },
@@ -149,11 +168,13 @@ PowerGym.States.Lvl3.prototype = {
     }
 
     this.treadmillSpeedLvl += 1;
-    this.velocityToAdd -= this.treadmillSpeedLvl;
+    this.treadmillLvlText.text = this.treadmillSpeedLvl;
 
     this.treadmillSpeedUpTimerEvent = this.time.events.loop(this.treadmillLvlduration, function() {
       this.treadmillSpeedLvl += 1;
+      this.treadmillLvlText.text = this.treadmillSpeedLvl;
     }, this);
+
   },
 
   fallOff: function() {
@@ -187,25 +208,25 @@ PowerGym.States.Lvl3.prototype = {
       {
         name: "Max Speed (c/s)",
         amount: Math.round(this.maxCps * 100) / 100,
-        multiplier: 100,
+        multiplier: 10,
         units: "c/s"
       },
       {
         name: "Avg speed (c/s)",
         amount: Math.round(this.avgCps * 100) / 100,
-        multiplier: 100,
+        multiplier: 10,
         units: "c/s"
       },
       {
         name: "Total Clicks",
         amount: this.totalClicks,
-        multiplier: 10
+        multiplier: 4
+      },
+      {
+        name: "Level reached",
+        amount: this.treadmillSpeedLvl,
+        multiplier: 20
       }
-      // {
-      //   name: "Difficulty bonus",
-      //   amount: 200 * PowerGym.UserData.lvl3Difficulty,
-      //   multiplier: 1
-      // },
     ];
 
     var total = 0;
@@ -252,8 +273,7 @@ PowerGym.States.Lvl3.prototype = {
     if (clicksCount == 0) {
       this.currentCps = 1000 / (now - this.lastButtonPressTime);
     } else {
-      clicksCount += (now - this.lastButtonPressTime) * clicksCount / 1000;
-      // clicksCount += (now - this.lastButtonPressTime) / (1000 / clicksCount);
+      clicksCount += (now - this.lastButtonPressTime) / (1000 / clicksCount);
     }
     this.currentCps = clicksCount;
     this.maxCps = Math.max(this.maxCps, clicksCount);
@@ -272,7 +292,8 @@ PowerGym.States.Lvl3.prototype = {
       "btnGoBack",
       "player",
       "treadmill",
-      "playerMinMaxPos"
+      "playerMinMaxPos",
+      "treadmillLvlText"
     ];
     if (this.menuLvlStats) {
       gameObjects.push("menuLvlStats");
@@ -299,7 +320,9 @@ PowerGym.States.Lvl3.prototype = {
           - this.player.bodyGr.height / 2;
       break;
       case "btnGoBack":
-        var margin = 20 * this.gameScale;
+        var margin = 20 * this.gameScale
+            btnScale = this.isMobile ? this.gameScale * 2 : this.gameScale;
+        this.btnGoBack.scale.set(btnScale);
         this.btnGoBack.x = margin;
         this.btnGoBack.y = this.game.height - this.btnGoBack.height - margin;
         break;
@@ -325,6 +348,10 @@ PowerGym.States.Lvl3.prototype = {
             - 170 * this.gameScale
             - this.player.bodyGr.width / 2;
       break;
+      case "treadmillLvlText":
+        this.treadmillLvlText.x = this.game.width / 2 + 230 * this.gameScale;
+        this.treadmillLvlText.y = this.game.height / 2 - 50;
+      break;
       default:
     }
 
@@ -349,11 +376,8 @@ PowerGym.States.Lvl3.prototype = {
   render: function() {
 
     if (PowerGym.DEBUG_MODE) {
-      // this.game.debug.text("user force: " + this.userForce.x, 16, 16);
       this.game.debug.text("player velocity: " + this.player.bodySprite.body.velocity, 16, 16);
       this.game.debug.text("player velocity to add: " + this.velocityToAdd, 16, 32);
-      // this.game.debug.text("player acceleration: " + this.player.bodySprite.body.acceleration, 16, 48);
-      // this.game.debug.text("acceleration speed: " + this.speed, 16, 48);
       this.game.debug.text("treadmill speed level: " + this.treadmillSpeedLvl, 16, 48);
       this.game.debug.text("clicks per second: " + this.currentCps, 16, 64);
       this.game.debug.text("player world pos: " + this.player.bodySprite.world, 16, 80);
