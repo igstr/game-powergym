@@ -2,7 +2,10 @@
 PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) {
 
   this.game = game;
+  this.isMobile = !game.game.device.desktop || PowerGym.UserData.forceMobile;
+
   this.maxPoints = maxPoints;
+  this.nextBtnCallbackParam = nextCallback;
 
   var textSize = 16,
       textScaleX = 0.9;
@@ -43,18 +46,27 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
   this._windowSprite = game.add.sprite(0, 0, "menuLvlStatsBg", 0, this.window);
   this.window.sendToBack(this._windowSprite);
 
+  var windowPadding = 40;
+
   // Next Button
-  var btnNext = game.add.button(0, 0, "btnNext", nextCallback, game, 1, 0, 2, 0, this.window);
-  btnNext.x = this.window.width / 2 - btnNext.width / 2;
-  btnNext.y = this.window.height - this.window.height / 5;
+  this.btnNext = game.add.button(0, 0, "btnNext", this.nextBtnCallback, this, 1, 0, 2, 0, this.window);
+  if (this.isMobile) {
+    this.btnNext.scale.set(1.5);
+  }
+  this.btnNext.x = this.window.width / 2 - this.btnNext.width / 2;
+  this.btnNext.y = this.window.height - this.btnNext.height - windowPadding / 2;
 
   // Meter
   this._meterIndicator = game.add.sprite(0, 0, "menuLvlStatsMeterIndicator", 0, this._statsMeter);
   this._meterBorder = game.add.sprite(0, 0, "menuLvlStatsMeter", 0, this._statsMeter);
   this._meterIndicator.y = this._meterBorder.height - 20;
   this._meterIndicator.x = 4;
-  this._statsMeter.x = this.window.width - this.window.width / 5 - this._meterBorder.width / 2;
-  this._statsMeter.y = btnNext.top - this._statsMeter.height - 10;
+  this._statsMeter.scale.set(1.2);
+  this._statsMeter.x = this.window.width
+    - this._statsMeter.width
+    - windowPadding;
+  // this._statsMeter.y = this.btnNext.top - this._statsMeter.height - 10;
+  this._statsMeter.y = this.window.height / 2 - this._statsMeter.height / 2;
 
   // Vars
 
@@ -68,24 +80,21 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
 
   if (this.params !== undefined) {
 
+    var paramNumX = this._statsMeter.x - windowPadding / 3;
+
     for (var i = 0, l = this.params.length; i < l; i++) {
 
-      var x = this.window.width / 9,
-          y;
+      var textLineY = 0;
 
       // If previuos one exist
       if (this.texts[i - 1] && this.texts[i - 1].paramName) {
-        y = this.texts[i - 1].paramName.y + textSize * 2;
-      } else {
-        // Highest one at the top of stats meter
-        y = this._statsMeter.y + (this._statsMeter.height / 2) - ((this.params.length / 2) * textSize * 2);
-        // y = this._statsMeter.y;
+        textLineY = this.texts[i - 1].paramName.y + textSize * 2;
       }
 
       // Creating all text objects
       this.texts[i] = {};
-      this.texts[i].paramName = game.add.bitmapText(x, y, "carrierCommand", this.params[i].name + ": ", textSize, this._windowTexts);
-      this.texts[i].paramNum = game.add.bitmapText(this._statsMeter.x + 25, y, "carrierCommand", this.params[i].amount.toString(), textSize, this._windowTexts);
+      this.texts[i].paramName = game.add.bitmapText(0, textLineY, "carrierCommand", this.params[i].name + ": ", textSize, this._windowTexts);
+      this.texts[i].paramNum = game.add.bitmapText(paramNumX, textLineY, "carrierCommand", this.params[i].amount.toString(), textSize, this._windowTexts);
       this.texts[i].paramNum.anchor.x = 1;
       this.texts[i].paramName.tint = 0;
       this.texts[i].paramNum.tint = 0;
@@ -94,18 +103,23 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
       this.total += this.params[i].amount * this.params[i].multiplier;
     }
 
-    var xForTotal = this.window.width / 9,
-        // yForTotal = this._statsMeter.y + this._statsMeter.height - textSize * 1.5;
-        yForTotal = this.texts[this.texts.length - 1].paramName.y + textSize * 4;
+    var yForTotal = this.texts[this.texts.length - 1].paramName.y + textSize * 4;
 
     this.textTotal = {};
-    this.textTotal.paramName = game.add.bitmapText(xForTotal, yForTotal, "carrierCommand", "Total score: ", textSize, this._windowTexts);
-    this.textTotal.paramNum = game.add.bitmapText(this._statsMeter.x + 25, yForTotal, "carrierCommand", this.total.toString(), textSize, this._windowTexts);
+    this.textTotal.paramName = game.add.bitmapText(0, yForTotal, "carrierCommand", "Total score: ", textSize, this._windowTexts);
+    this.textTotal.paramNum = game.add.bitmapText(paramNumX, yForTotal, "carrierCommand", this.total.toString(), textSize, this._windowTexts);
     this.textTotal.paramNum.anchor.x = 1;
     this.textTotal.paramName.tint = 0;
     this.textTotal.paramNum.tint = 0;
 
   }
+
+  // Place texts
+  // console.log(this.btnNext.top - this._statsMeter.y);
+  this._windowTexts.x = windowPadding;
+  this._windowTexts.y = this._statsMeter.y
+    + (this.btnNext.top - this._statsMeter.y) / 2
+    - this._windowTexts.height / 2;
 
   this._windowTexts.forEach(function(item) {
     item.visible = false;
@@ -114,6 +128,12 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
   this.lineCountTimer = game.time.create(false);
   this.lineCountTimer.start();
   game.time.events.repeat(500, 1, this.countLines, this);
+
+  // Skip current line if user clicked anywhere in the window
+  this._windowSprite.inputEnabled = true;
+  this._windowSprite.events.onInputDown.add(function() {
+    this.skipCurrentLine();
+  }, this);
 
 };
 
@@ -162,6 +182,17 @@ PowerGym.Prefabs.MenuLvlStats.prototype = {
       this.updateStatsMeter();
 
     }, this);
+
+  },
+
+  nextBtnCallback: function() {
+
+    // if count not done skip lines else call passed parameter callback
+    if (!this.textTotal.paramName.visible) {
+      this.skipCurrentLine();
+    } else {
+      this.nextBtnCallbackParam.call(this.game);
+    }
 
   },
 
