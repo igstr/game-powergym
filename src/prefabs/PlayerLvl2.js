@@ -50,7 +50,7 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
   // Position differs because animations sprite is larger then body group.
   this._bodyAnims = game.add.sprite(-38, -25, "playerLvl2BodyAnimations", 0, this.body);
   switch (difficulty) {
-    case 2:
+    case 0:
       this._bodyAnims.animations.add("idle", [15], 6, true);
       this._bodyAnims.animations.add("getReady", [14, 13, 12, 11, 10, 9, 8], 6);
       this._bodyAnims.animations.add("fallDown", [7, 6, 5, 4, 3, 2, 1, 0], 6);
@@ -60,7 +60,7 @@ PowerGym.Prefabs.PlayerLvl2 = function(game, x, y, headBangCallback, headBangCal
       this._bodyAnims.animations.add("getReady", [30, 29, 28, 27, 26, 25, 24], 6);
       this._bodyAnims.animations.add("fallDown", [23, 22, 21, 20, 19, 18, 17, 16], 6);
       break;
-    case 0:
+    case 2:
     default:
       this._bodyAnims.animations.add("idle", [47], 6, true);
       this._bodyAnims.animations.add("getReady", [46, 45, 44, 43, 42, 41, 40], 6);

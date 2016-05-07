@@ -5,8 +5,9 @@ PowerGym.States.Lvl2.prototype = {
 
   create: function () {
 
-    this.gameAspectRatio = PowerGym.GameData.aspectRatio;
     this.gameScale = PowerGym.GameData.scale;
+    this.isMobile = !this.game.device.desktop || PowerGym.UserData.forceMobile;
+
     this.repsCounter = 0;
     this.failCounter = 0;
     this.leftArmReachedRepBottom = true;
@@ -30,11 +31,23 @@ PowerGym.States.Lvl2.prototype = {
 
     this.btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this);
 
-    this.putEverythingInPlace();
-
     // INPUT
 
     PowerGym.Keys.Spacebar.onDown.add(this.spacebarKeyCallback, this);
+
+    this.grOnScreenArrows = this.add.group(this.world, "onScreenArrowButtons");
+    var onScreenArrowMargin = 5;
+    this.onScreenArrowUpLeft = this.add.sprite(0, 0, "btnArrow", 0, this.grOnScreenArrows);
+    this.onScreenArrowUpLeft.anchor.setTo(0.5, 0.5);
+    this.onScreenArrowUpLeft.rotation = Math.PI / 2;
+    this.onScreenArrowUpLeft.inputEnabled = true;
+
+    this.onScreenArrowUpRight = this.add.sprite(0, 0, "btnArrow", 0, this.grOnScreenArrows);
+    this.onScreenArrowUpRight.anchor.setTo(0.5, 0.5);
+    this.onScreenArrowUpRight.rotation = Math.PI / 2;
+    this.onScreenArrowUpRight.inputEnabled = true;
+
+    this.putEverythingInPlace();
 
   },
 
@@ -45,11 +58,19 @@ PowerGym.States.Lvl2.prototype = {
 
     if (!this.fallenDown) {
 
+      this.manageOnScreenArrowsStates();
+
       if (!this.controlsDisabled) {
-        if (PowerGym.Keys.J.isDown || PowerGym.Keys.Right.isDown) {
+        if (PowerGym.Keys.J.isDown
+            || PowerGym.Keys.Right.isDown
+            || this.onScreenArrowUpRight.input.pointerDown(this.input.activePointer.id)
+        ) {
           this.jKeyCallback();
         }
-        if (PowerGym.Keys.F.isDown || PowerGym.Keys.Left.isDown) {
+        if (PowerGym.Keys.F.isDown
+            || PowerGym.Keys.Left.isDown
+            || this.onScreenArrowUpLeft.input.pointerDown(this.input.activePointer.id)
+        ) {
           this.fKeyCallback();
         }
       }
@@ -91,6 +112,7 @@ PowerGym.States.Lvl2.prototype = {
         "player",
         "btnGoBack",
         "repsCounterText",
+        "onScreenArrows"
     ];
     if (this.menuLvlStats) {
       gameObjectsToAdjust.push("menuLvlStats");
@@ -120,8 +142,9 @@ PowerGym.States.Lvl2.prototype = {
         this.repsCounterText.y = 80 * this.gameScale;
       break;
       case "btnGoBack":
-        this.btnGoBack.scale.set(this.gameScale);
-        var margin = 20 * this.gameScale;
+        var margin = 20 * this.gameScale
+            btnScale = this.isMobile ? this.gameScale * 2 : this.gameScale;
+        this.btnGoBack.scale.set(btnScale);
         this.btnGoBack.x = margin;
         this.btnGoBack.y = this.game.height - this.btnGoBack.height - margin;
       break;
@@ -132,21 +155,97 @@ PowerGym.States.Lvl2.prototype = {
         this.menuLvlStats.window.y = this.game.height / 2
           - this.menuLvlStats.window.height / 2;
       break;
+      case "onScreenArrows":
+        var screenEdgeMargin = 20,
+            btnScale = this.isMobile ? this.gameScale * 4 : this.gameScale;
+
+        this.onScreenArrowUpLeft.scale.set(btnScale);
+        this.onScreenArrowUpRight.scale.set(btnScale);
+
+        var leftX, rightX;
+        if (this.isMobile) {
+          leftX = this.onScreenArrowUpLeft.width / 2 + screenEdgeMargin;
+          rightX = this.game.width
+            - this.onScreenArrowUpRight.width / 2
+            - screenEdgeMargin
+        } else {
+          leftX = this.game.width / 2 - 230 * this.gameScale;
+          rightX = this.game.width / 2 + 230 * this.gameScale;
+        }
+        console.log(leftX);
+        console.log(rightX);
+        this.onScreenArrowUpLeft.x = leftX;
+        this.onScreenArrowUpLeft.y = this.game.height / 2
+          - 75 * this.gameScale
+          + this.onScreenArrowUpLeft.height / 2;
+        this.onScreenArrowUpRight.x = rightX;
+        this.onScreenArrowUpRight.y = this.game.height / 2
+          - 75 * this.gameScale
+          + this.onScreenArrowUpRight.height / 2;
+      break;
       default:
     }
 
   },
 
-  render: function() {
+  manageOnScreenArrowsStates: function() {
 
-    // If window was resized readjusting game objects
-    if (this.gameAspectRatio != PowerGym.GameData.aspectRatio) {
-
-      this.gameAspectRatio = PowerGym.GameData.aspectRatio;
-      this.gameScale = PowerGym.GameData.scale;
-      this.putEverythingInPlace();
-
+    // Left arrow
+    if (this.onScreenArrowUpLeft.input.pointerDown(this.input.activePointer.id)) {
+      this.game.canvas.style.cursor = "pointer";
+      this.onScreenArrowUpLeft.frame = 2;
+    } else if (PowerGym.Keys.Left.isDown
+        || PowerGym.Keys.F.isDown
+    ) {
+      this.onScreenArrowUpLeft.frame = 2;
+    } else if (this.onScreenArrowUpLeft.input.pointerOver(this.input.activePointer.id)
+        && !this.isMobile
+    ) {
+      this.game.canvas.style.cursor = "pointer";
+      this.onScreenArrowUpLeft.frame = 1;
+    } else if (this.onScreenArrowUpLeft.input.pointerOut(this.input.activePointer.id)
+        || !PowerGym.Keys.Left.isDown
+        || !PowerGym.Keys.F.isDown
+    ) {
+      this.onScreenArrowUpLeft.frame = 0;
     }
+    if (this.onScreenArrowUpLeft.input.justOut(this.input.activePointer.id, 50)) {
+        this.game.canvas.style.cursor = "default";
+    }
+
+    // Right arrow
+    if (this.onScreenArrowUpRight.input.pointerDown(this.input.activePointer.id)) {
+      this.game.canvas.style.cursor = "pointer";
+      this.onScreenArrowUpRight.frame = 2;
+    } else if (PowerGym.Keys.Right.isDown
+        || PowerGym.Keys.J.isDown
+    ) {
+      this.onScreenArrowUpRight.frame = 2;
+    } else if (this.onScreenArrowUpRight.input.pointerOver(this.input.activePointer.id)
+        && !this.isMobile
+    ) {
+      this.game.canvas.style.cursor = "pointer";
+      this.onScreenArrowUpRight.frame = 1;
+    } else if (this.onScreenArrowUpRight.input.pointerOut(this.input.activePointer.id)
+        || !PowerGym.Keys.Right.isDown
+        || !PowerGym.Keys.J.isDown
+    ) {
+      this.onScreenArrowUpRight.frame = 0;
+    }
+    if (this.onScreenArrowUpRight.input.justOut(this.input.activePointer.id, 50)) {
+        this.game.canvas.style.cursor = "default";
+    }
+
+  },
+
+  resize: function(width, heigth) {
+
+    this.gameScale = PowerGym.GameData.scale;
+    this.putEverythingInPlace();
+
+  },
+
+  render: function() {
 
     if (PowerGym.DEBUG_MODE) {
       this.game.debug.text("leftArm rotation: " + this.player._leftArm.rotation, 8, 16);
@@ -162,6 +261,10 @@ PowerGym.States.Lvl2.prototype = {
   },
 
   endState: function(pointer) {
+
+    // No comming back
+    this.btnGoBack.destroy();
+    this.grOnScreenArrows.destroy();
 
     var stats = [
       {
@@ -200,7 +303,6 @@ PowerGym.States.Lvl2.prototype = {
         this.game.state.start("Home");
       }, stats, 4000);
       this.placeGameObject("menuLvlStats");
-      this.btnGoBack.visible = false;
 
       PowerGym.Keys.MouseL.onDown.add(function() {
         this.menuLvlStats.skipCurrentLine();
