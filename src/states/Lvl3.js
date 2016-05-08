@@ -53,7 +53,7 @@ PowerGym.States.Lvl3.prototype = {
     // GUI
 
     // Treadmill lvl number text
-    this.treadmillLvlText = this.add.bitmapText(0, 0, "carrierCommand", this.treadmillSpeedLvl);
+    this.treadmillLvlText = this.add.bitmapText(0, 0, "carrierCommand", this.treadmillSpeedLvl.toString());
     this.treadmillLvlText.anchor.setTo(0.5, 0.5);
 
     this.btnGoBack = this.add.button(
@@ -130,7 +130,7 @@ PowerGym.States.Lvl3.prototype = {
         // No more negative velocity
         this.velocityToAdd = Math.max(0, this.velocityToAdd);
 
-        this.fallOff();
+        this.falloff();
       }
 
       // If velocity was wrong stop the player
@@ -177,7 +177,7 @@ PowerGym.States.Lvl3.prototype = {
 
   },
 
-  fallOff: function() {
+  falloff: function() {
 
     this.fallingOff = true;
 
@@ -186,6 +186,7 @@ PowerGym.States.Lvl3.prototype = {
     this.velocityToAdd = 0;
 
     this.playTime = this.time.now - this.playStartTime;
+    this.player.falloff();
     this.endState();
 
   },
@@ -237,7 +238,7 @@ PowerGym.States.Lvl3.prototype = {
     PowerGym.UserData.Scores.lvl3 = total;
 
     // Stats
-    this.game.time.events.add(100, function() {
+    this.game.time.events.add(2000, function() {
 
       this.menuLvlStats = new PowerGym.Prefabs.MenuLvlStats(this, function() {
         this.game.state.start("Home");

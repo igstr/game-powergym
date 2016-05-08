@@ -57,6 +57,7 @@ PowerGym.States.Preloader.prototype = {
     this.load.spritesheet("playerLvl2BodyAnimations", "assets/sprites/lvl2/player/player260x400.png", 260, 400);
 
     this.load.spritesheet("playerLvl3Run", "assets/sprites/lvl3/player/run200x320.png", 200, 320);
+    this.load.spritesheet("playerLvl3Falloff", "assets/sprites/lvl3/player/falloff700x340.png", 700, 340);
 
     // Icons
     this.load.image("whiteArrow", "assets/sprites/arrow.png");

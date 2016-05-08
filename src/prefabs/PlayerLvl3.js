@@ -13,6 +13,12 @@ PowerGym.Prefabs.PlayerLvl3 = function(game, x, y) {
   this.bodySprite.animations.add("run", [0, 1, 2, 3, 4], 6, true);
   this.bodySprite.animations.play("run");
 
+  this.bodyAnims = this.bodySprite.addChild(game.make.sprite(0, 0, "playerLvl3Falloff", 0));
+  this.bodyAnims.x = 140 - this.bodyAnims.width;
+  this.bodyAnims.y = 50;
+  this.bodyAnims.animations.add("falloff", [0, 1, 2, 3, 4, 5], 6);
+  this.bodyAnims.visible = false;
+
   this.bodyGr.x = x;
   this.bodyGr.y = y;
 
@@ -20,7 +26,19 @@ PowerGym.Prefabs.PlayerLvl3 = function(game, x, y) {
 
 PowerGym.Prefabs.PlayerLvl3.prototype = {
 
-  update: function() { }
+  update: function() { },
+
+  falloff: function() {
+
+    // Setting main body to non existing frame because hiding it hides the
+    // child as well.
+    this.bodySprite.animations.stop();
+    this.bodySprite.setFrame(-1);
+
+    this.bodyAnims.visible = true;
+    this.bodyAnims.animations.play("falloff", 6);
+
+  }
 
 }
 
