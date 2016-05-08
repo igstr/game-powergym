@@ -82,8 +82,44 @@ PowerGym.States.Lvl1.prototype = {
         this
     );
 
+    // Info window
 
-    // On screen arrows
+    // If first time playing this level show info window
+    if (PowerGym.UserData.Stats.overallLvl1Score == 0) {
+      this.time.events.add(1500, function() {
+
+        this.disableBtnGoBack();
+        this.menuInfo = new PowerGym.Prefabs.MenuLvlInfo(this, 1, this.menuInfoOkBtnCallback);
+        this.placeGameObject("menuInfo");
+
+      }, this);
+    } else {
+      this.createOnscreenBtns();
+      this.addGetReadyCallback();
+    }
+
+    this.putEverythingInPlace();
+
+  },
+
+  enableBtnGoBack: function() {
+
+    this.btnGoBack.onInputUp.add(this.btnGoBackCallback, this);
+    this.btnGoBack.freezeFrames = false;
+    this.btnGoBack.input.useHandCursor = true;
+
+  },
+
+  disableBtnGoBack: function() {
+
+    this.btnGoBack.onInputUp.remove(this.btnGoBackCallback, this);
+    this.btnGoBack.freezeFrames = true;
+    this.btnGoBack.input.useHandCursor = false;
+
+  },
+
+  createOnscreenBtns: function() {
+
     this.grOnScreenArrows = this.add.group(this.world, "onScreenArrowButtons");
     if (!this.isMobile) {
       var onScreenArrowMargin = 5;
@@ -118,18 +154,7 @@ PowerGym.States.Lvl1.prototype = {
       this.onScreenArrowRight.anchor.setTo(0.5, 0.5);
       this.onScreenArrowRight.inputEnabled = true;
       this.onScreenArrowRight.rotation = Math.PI;
-
     }
-
-    this.putEverythingInPlace();
-
-    // INPUT KEYS
-    //-------------------
-
-    PowerGym.Keys.Up.onDown.add(this.getReady, this);
-    PowerGym.Keys.Down.onDown.add(this.getReady, this);
-    PowerGym.Keys.Left.onDown.add(this.getReady, this);
-    PowerGym.Keys.Right.onDown.add(this.getReady, this);
 
   },
 
@@ -156,7 +181,7 @@ PowerGym.States.Lvl1.prototype = {
     this.repsCounterText.text = this.repsCounter;
 
     // Updating on screen arrow states
-    if (!this.fallenDown) {
+    if (this.grOnScreenArrows && !this.fallenDown) {
       this.manageOnScreenArrowsStates();
     }
 
@@ -248,23 +273,27 @@ PowerGym.States.Lvl1.prototype = {
     }
   },
 
-  endState: function(pointer) {
-
-    this.balanceIndicator.body.moves = false;
-
-    this.btnGoBack.destroy();
-
-    PowerGym.Keys.Up.onDown.remove(this.pressUp);
-    PowerGym.Keys.Down.onDown.remove(this.pressDown);
-    this.onScreenArrowDown.onInputDown.remove(this.pressDown);
-    this.onScreenArrowUp.onInputDown.remove(this.pressUp);
-    this.grOnScreenArrows.destroy();
-    // this.grOnScreenArrows.visible = false;
+  shutdown: function() {
 
     PowerGym.Keys.Up.onDown.remove(this.pressUp, this);
     PowerGym.Keys.Down.onDown.remove(this.pressDown, this);
     this.onScreenArrowDown.onInputDown.remove(this.pressDown, this);
     this.onScreenArrowUp.onInputDown.remove(this.pressUp, this);
+    this.grOnScreenArrows.destroy();
+    this.grOnScreenArrows = null;
+
+  },
+
+  endState: function(pointer) {
+
+    // No need to move
+    this.balanceIndicator.body.moves = false;
+
+    // No coming back at this point
+    this.btnGoBack.destroy();
+
+    // Hide on sceen buttons
+    this.grOnScreenArrows.destroy();
 
     var stats = [
       {
@@ -385,10 +414,15 @@ PowerGym.States.Lvl1.prototype = {
         "balanceIndicator",
         "texts",
         "repsCounterText",
-        "onScreenArrows"
     ];
     if (this.menuLvlStats) {
       gameObjects.push("menuLvlStats");
+    }
+    if (this.menuInfo) {
+      gameObjects.push("menuInfo");
+    }
+    if (this.grOnScreenArrows) {
+      gameObjects.push("onScreenArrows");
     }
     for (var i = 0, l = gameObjects.length; i < l; i++) {
       this.placeGameObject(gameObjects[i]);
@@ -413,7 +447,7 @@ PowerGym.States.Lvl1.prototype = {
       case "balanceIndicator":
         this.grBalanceIndicator.scale.x = this.scale.width
           / (this.indicatorAmplitude + this.indicatorWidth);
-      break;
+        break;
       case "btnGoBack":
         var margin = 20 * this.gameScale
             btnScale = this.isMobile ? this.gameScale * 2 : this.gameScale;
@@ -425,14 +459,21 @@ PowerGym.States.Lvl1.prototype = {
         this.repsCounterText.scale.set(this.gameScale);
         this.repsCounterText.x = this.game.width / 2;
         this.repsCounterText.y = 80 * this.gameScale;
-      break;
+        break;
       case "menuLvlStats":
         this.menuLvlStats.window.scale.set(this.gameScale);
         this.menuLvlStats.window.x = this.game.width / 2
           - this.menuLvlStats.window.width / 2;
         this.menuLvlStats.window.y = this.game.height / 2
           - this.menuLvlStats.window.height / 2;
-      break;
+        break;
+      case "menuInfo":
+        this.menuInfo.window.scale.set(this.gameScale);
+        this.menuInfo.window.x = this.game.width / 2
+          - this.menuInfo.window.width / 2;
+        this.menuInfo.window.y = this.game.height / 2
+          - this.menuInfo.window.height / 2;
+        break;
       case "onScreenArrows":
         if (!this.isMobile) {
           this.grOnScreenArrows.scale.set(this.gameScale);
@@ -460,7 +501,7 @@ PowerGym.States.Lvl1.prototype = {
             + this.grOnScreenArrowsRight.height / 2;
 
         }
-      break;
+        break;
       default:
     }
 
@@ -513,6 +554,26 @@ PowerGym.States.Lvl1.prototype = {
 
     this.player.pressFrac -= 0.2;
 
-  }
+  },
+
+  menuInfoOkBtnCallback: function() {
+
+    this.menuInfo.destroy();
+    this.menuInfo = null;
+
+    this.enableBtnGoBack();
+    this.createOnscreenBtns();
+    this.putEverythingInPlace();
+    this.addGetReadyCallback();
+  },
+
+  addGetReadyCallback: function() {
+
+    PowerGym.Keys.Up.onDown.add(this.getReady, this);
+    PowerGym.Keys.Down.onDown.add(this.getReady, this);
+    PowerGym.Keys.Left.onDown.add(this.getReady, this);
+    PowerGym.Keys.Right.onDown.add(this.getReady, this);
+
+  },
 
 };

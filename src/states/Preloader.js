@@ -87,6 +87,10 @@ PowerGym.States.Preloader.prototype = {
     this.load.image("menuLvlStatsMeterIndicator", "assets/menus/lvl_stats/meter-indicator.png");
     this.load.spritesheet("btnNext", "assets/menus/lvl_stats/btn-next110x85.png", 110, 85);
 
+    this.load.image("lvl1Info", "assets/menus/lvl_info/lvl1.png");
+    this.load.image("lvl2Info", "assets/menus/lvl_info/lvl2.png");
+    this.load.image("lvl3Info", "assets/menus/lvl_info/lvl3.png");
+
     // Backgrounds
     this.load.image("bgMainMenu", "assets/images/bg-main_menu.png");
     this.load.image("bgHome", "assets/sprites/home/bg.png");

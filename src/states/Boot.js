@@ -62,6 +62,11 @@ PowerGym.Boot.prototype = {
     PowerGym.Keys.Left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
     PowerGym.Keys.Right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
 
+    PowerGym.Keys.W = this.input.keyboard.addKey(Phaser.Keyboard.W);
+    PowerGym.Keys.A = this.input.keyboard.addKey(Phaser.Keyboard.A);
+    PowerGym.Keys.S = this.input.keyboard.addKey(Phaser.Keyboard.S);
+    PowerGym.Keys.D = this.input.keyboard.addKey(Phaser.Keyboard.D);
+
     PowerGym.Keys.J = this.input.keyboard.addKey(Phaser.Keyboard.J);
     PowerGym.Keys.F = this.input.keyboard.addKey(Phaser.Keyboard.F);
     PowerGym.Keys.D = this.input.keyboard.addKey(Phaser.Keyboard.D);

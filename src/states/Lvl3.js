@@ -40,6 +40,7 @@ PowerGym.States.Lvl3.prototype = {
 
     this.treadmill = this.add.sprite(0, 0, "treadmillTrack", 0);
     this.treadmill.animations.add("run", [1, 2, 3, 4, 5], 6, true);
+    this.treadmill.animations.play("run", 6, true);
 
     // PLAYER
 
@@ -64,18 +65,48 @@ PowerGym.States.Lvl3.prototype = {
         this
     );
 
+    // Info window
 
-    this.getReady();
+    // If first time playing this level show info window
+    if (PowerGym.UserData.Stats.overallLvl3Score == 0) {
+      this.time.events.add(1500, function() {
+
+        this.disableBtnGoBack();
+        this.menuInfo = new PowerGym.Prefabs.MenuLvlInfo(this, 3, this.menuInfoOkBtnCallback);
+        this.placeGameObject("menuInfo");
+
+      }, this);
+    } else {
+      this.getReady();
+    }
+
     this.putEverythingInPlace();
 
-    // INPUT
+  },
 
-    // Don't cheat!
-    // this.input.keyboard.onUpCallback = this.anyKeyUpCallback;
+  menuInfoOkBtnCallback: function() {
 
-    PowerGym.Keys.Spacebar.onDown.add(this.speedUpClickCallback, this);
-    this.bgImage.inputEnabled = true;
-    this.bgImage.events.onInputDown.add(this.speedUpClickCallback, this);
+    this.menuInfo.destroy();
+    this.menuInfo = null;
+
+    this.enableBtnGoBack();
+    this.getReady();
+
+  },
+
+  enableBtnGoBack: function() {
+
+    this.btnGoBack.onInputUp.add(this.btnGoBackCallback, this);
+    this.btnGoBack.freezeFrames = false;
+    this.btnGoBack.input.useHandCursor = true;
+
+  },
+
+  disableBtnGoBack: function() {
+
+    this.btnGoBack.onInputUp.remove(this.btnGoBackCallback, this);
+    this.btnGoBack.freezeFrames = true;
+    this.btnGoBack.input.useHandCursor = false;
 
   },
 
@@ -88,19 +119,6 @@ PowerGym.States.Lvl3.prototype = {
 
   update: function() {
 
-
-    if (!this.isPlaying
-        && this.player.bodySprite.animations.currentAnim.name == "run"
-    ) {
-      this.isPlaying = true;
-      this.playStartTime = this.time.now;
-
-      // Start speed level incrementer
-      this.increaseTreadmillSpeedLvl();
-
-      // Start cps counter. count 10 times per second.
-      this.currentCpsCountTimerEvent = this.time.events.loop(100, this.countClicksPerSecond, this);
-    }
 
     if (this.isPlaying && !this.fallingOff) {
 
@@ -299,6 +317,9 @@ PowerGym.States.Lvl3.prototype = {
     if (this.menuLvlStats) {
       gameObjects.push("menuLvlStats");
     }
+    if (this.menuInfo) {
+      gameObjects.push("menuInfo");
+    }
     for (var i = 0, l = gameObjects.length; i < l; i++) {
       this.placeGameObject(gameObjects[i]);
     }
@@ -341,6 +362,13 @@ PowerGym.States.Lvl3.prototype = {
         this.menuLvlStats.window.y = this.game.height / 2
           - this.menuLvlStats.window.height / 2;
       break;
+      case "menuInfo":
+        this.menuInfo.window.scale.set(this.gameScale);
+        this.menuInfo.window.x = this.game.width / 2
+          - this.menuInfo.window.width / 2;
+        this.menuInfo.window.y = this.game.height / 2
+          - this.menuInfo.window.height / 2;
+        break;
       case "playerMinMaxPos":
         this.maxPos.x = this.game.width / 2
             + 150 * this.gameScale
@@ -368,12 +396,6 @@ PowerGym.States.Lvl3.prototype = {
 
   },
 
-  anyKeyUpCallback: function() {
-
-    this.game.state.callbackContext.speedUpClickCallback();
-
-  },
-
   render: function() {
 
     if (PowerGym.DEBUG_MODE) {
@@ -390,9 +412,18 @@ PowerGym.States.Lvl3.prototype = {
 
   getReady: function() {
 
-    if (!this.isPlaying) {
-      this.treadmill.animations.play("run", 6, true);
-    }
+    PowerGym.Keys.Spacebar.onDown.add(this.speedUpClickCallback, this);
+    this.bgImage.inputEnabled = true;
+    this.bgImage.events.onInputDown.add(this.speedUpClickCallback, this);
+
+    // Start speed level incrementer
+    this.increaseTreadmillSpeedLvl();
+
+    // Start cps counter. count 10 times per second.
+    this.currentCpsCountTimerEvent = this.time.events.loop(100, this.countClicksPerSecond, this);
+
+    this.isPlaying = true;
+    this.playStartTime = this.time.now;
 
   },
 
