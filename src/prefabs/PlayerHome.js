@@ -119,3 +119,11 @@ PowerGym.Prefabs.PlayerHome.prototype.enlargeMuscleByAmount = function(muscle, a
   }
 
 }
+
+PowerGym.Prefabs.PlayerHome.prototype.resetMuscles = function(scales) {
+
+  this.body.forEach(function(item) {
+    item.scale.x = 1;
+  }, this)
+
+}

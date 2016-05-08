@@ -6,17 +6,17 @@ PowerGym.States.Home.prototype = {
   create: function () {
 
     this.gameScale = PowerGym.GameData.scale;
-
     this.bgImage = this.add.image(0, 0, "bgHome");
 
-    if (!PowerGym.UserData.playerProgress) {
-      PowerGym.UserData.playerProgress = {
-        torso: 1,
-        arms: 1,
-        legs: 1,
-        head: 1,
-        shorts: 1
-      };
+    // Loading data from storage and "binding" data manager to it
+    if (!this.dataManager) {
+      this.dataManager = new PowerGym.DataManager();
+      var userData = this.dataManager.load();
+      if (userData) {
+        PowerGym.UserData = userData;
+      } else {
+        this.dataManager.data = PowerGym.UserData;
+      }
     }
 
     // Player
@@ -73,6 +73,10 @@ PowerGym.States.Home.prototype = {
       PowerGym.UserData.playerProgress.head += scaleAmount;
     }
 
+    // Save scores to storage
+    this.dataManager.save();
+
+
     // Menu level buttons
     var btnScale = 1.3,
         btnImgSize = 100,
@@ -96,9 +100,10 @@ PowerGym.States.Home.prototype = {
 
     // Button to force mobile mode
     if (this.game.device.desktop) {
-      this.btnMobile = this.add.button(0, 0, "btnMobile", this.mobileCallback, this, 1, 0, 0, 0);
-      this.btnMobileOn = this.add.button(0, 0, "btnMobileOn", this.mobileCallback, this, 1, 0, 0, 0);
+      this.btnMobile = this.add.button(0, 0, "btnMobile", this.btnMobileCallback, this, 1, 0, 0, 0);
+      this.btnMobileOn = this.add.button(0, 0, "btnMobileOn", this.btnMobileCallback, this, 1, 0, 0, 0);
     }
+    this.btnBin = this.add.button(0, 0, "btnBin", this.btnBinCallback, this, 1, 0, 2, 0);
 
     this.putEverythingInPlace();
 
@@ -112,7 +117,7 @@ PowerGym.States.Home.prototype = {
 
   putEverythingInPlace: function() {
 
-    var gameObjects = ["bg", "player", "lvlBtns"];
+    var gameObjects = ["bg", "player", "lvlBtns", "btnBin"];
     if (this.menuLvlOptions && this.menuLvlOptions.window.visible) {
       gameObjects.push("menuLvlOptions");
     }
@@ -125,11 +130,28 @@ PowerGym.States.Home.prototype = {
 
   },
 
-  mobileCallback: function() {
+  btnMobileCallback: function() {
 
     PowerGym.UserData.forceMobile = !PowerGym.UserData.forceMobile;
-    this.is
+    this.dataManager.save();
     this.putEverythingInPlace();
+
+  },
+
+  btnBinCallback: function() {
+
+    // Needed for comparison of two objects if they contain equal data
+    var currentProgress = JSON.stringify(PowerGym.UserData.playerProgress)
+        defaultProgress = JSON.stringify(PowerGym.Defaults.UserData.playerProgress)
+
+    // If not already reset
+    if (currentProgress != defaultProgress) {
+      // Clone default progress data
+      PowerGym.UserData.playerProgress = JSON.parse(defaultProgress);
+      PowerGym.UserData.Stats.resetCount++;
+      this.player.resetMuscles();
+      this.dataManager.save();
+    }
 
   },
 
@@ -166,7 +188,7 @@ PowerGym.States.Home.prototype = {
         this.btnMobileOn.scale.set(this.gameScale);
 
         var margin = 10 * this.gameScale,
-            y = this.game.height - this.btnMobile.height - margin;
+            y =  this.btnBin.top - this.btnMobile.height - margin;
 
         this.btnMobile.x = margin;
         this.btnMobile.y = y;
@@ -174,6 +196,13 @@ PowerGym.States.Home.prototype = {
         this.btnMobileOn.y = y;
         this.btnMobileOn.visible = PowerGym.UserData.forceMobile;
         this.btnMobile.visible = !PowerGym.UserData.forceMobile;
+        break;
+      case "btnBin":
+        var margin = 10 * this.gameScale,
+            scale = isMobile ? this.gameScale * 2 : this.gameScale;
+        this.btnBin.scale.set(scale);
+        this.btnBin.x = margin;
+        this.btnBin.y = this.game.height - this.btnBin.height - margin;
         break;
       case "menuLvlOptions":
         this.menuLvlOptions.window.scale.set(this.gameScale);
@@ -268,26 +297,50 @@ PowerGym.States.Home.prototype = {
   disableStateBtns: function() {
 
     this.grLvlBtns.visible = false;
+
+    // If mobile button visible disable it
     if (this.game.device.desktop) {
+      var button;
       if (PowerGym.UserData.forceMobile) {
-        this.btnMobileOn.visible = false;
+        button = this.btnMobileOn;
       } else {
-        this.btnMobile.visible = false;
+        button = this.btnMobile;
       }
+      // button.visible = true;
+      button.onInputUp.remove(this.btnMobileCallback, this);
+      button.freezeFrames = true;
+      button.input.useHandCursor = false;
     }
+
+    // Disable bin button
+    this.btnBin.onInputUp.remove(this.btnBinCallback, this);
+    this.btnBin.freezeFrames = true;
+    this.btnBin.input.useHandCursor = false;
 
   },
 
   enableStateBtns: function() {
 
     this.grLvlBtns.visible = true;
+
+    // If mobile button visible enable it
     if (this.game.device.desktop) {
+      var button;
       if (PowerGym.UserData.forceMobile) {
-        this.btnMobileOn.visible = true;
+        button = this.btnMobileOn;
       } else {
-        this.btnMobile.visible = true;
+        button = this.btnMobile;
       }
+      // button.visible = true;
+      button.onInputUp.add(this.btnMobileCallback, this);
+      button.freezeFrames = false;
+      button.input.useHandCursor = true;
     }
+
+    // Enable bin button
+    this.btnBin.onInputUp.add(this.btnBinCallback, this);
+    this.btnBin.freezeFrames = false;
+    this.btnBin.input.useHandCursor = true;
 
   }
 

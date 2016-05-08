@@ -8,7 +8,7 @@ module.exports = function(grunt) {
         sourceMap: true
       },
       build: {
-        src: 'src/**/*.js',
+        src: ['src/PowerGym.js', 'src/**/*.js'],
         dest: 'build/<%= pkg.name %>.min.js'
       }
     }

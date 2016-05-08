@@ -23,27 +23,42 @@ var PowerGym = {
   // Input keys
   Keys: {},
 
-  // User save data and preferences
-  UserData: {
+  Defaults: {
 
-    Scores: {},
+    UserData: {
 
-    Stats: {
+      Scores: {},
 
-      overallScore: 0,
-      overallLvl1Score: 0,
-      overallLvl2Score: 0,
-      overallLvl3Score: 0,
-      overallLvl4Score: 0,
-      overallReps: 0,
-      overallFails: 0,
-      totalWorkoutTime: 0,
+      Stats: {
 
+        overallScore: 0,
+        overallLvl1Score: 0,
+        overallLvl2Score: 0,
+        overallLvl3Score: 0,
+        overallLvl4Score: 0,
+        overallReps: 0,
+        overallFails: 0,
+        totalWorkoutTime: 0,
+        resetCount: 0,
+
+      },
+
+      forceMobile: true,
+
+      playerProgress: {
+
+          torso: 1,
+          arms: 1,
+          legs: 1,
+          head: 1,
+          shorts: 1
+
+      }
     },
-
-    forceMobile: false
-
   },
+
+  // User save data and preferences
+  UserData: {},
 
   // Runtime game data
   GameData: {
@@ -55,3 +70,7 @@ var PowerGym = {
   }
 
 };
+
+// Clone default user data
+PowerGym.UserData = JSON.parse(JSON.stringify(PowerGym.Defaults.UserData));
+
