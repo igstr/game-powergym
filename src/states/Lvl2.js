@@ -97,8 +97,7 @@ PowerGym.States.Lvl2.prototype = {
     // Updating reps counter text
     this.repsCounterText.text = this.repsCounter;
 
-    if (this.playerReady && !this.fallenDown) {
-
+    if (this.grOnScreenArrows) {
       this.manageOnScreenArrowsStates();
 
       if (!this.controlsDisabled) {
@@ -117,6 +116,9 @@ PowerGym.States.Lvl2.prototype = {
           this.fKeyCallback();
         }
       }
+    }
+
+    if (this.playerReady && !this.fallenDown) {
 
       // Reps counter
       if (this.leftArmReachedRepBottom
@@ -416,16 +418,24 @@ PowerGym.States.Lvl2.prototype = {
 
   fKeyCallback: function() {
 
-    if (!this.controlsDisabled) {
-      this.player.rightArmVelocity += 50 * this.game.time.physicsElapsed;
+    if (this.playerReady) {
+      if (!this.controlsDisabled) {
+        this.player.rightArmVelocity += 50 * this.game.time.physicsElapsed;
+      }
+    } else {
+      this.getReady();
     }
 
   },
 
   jKeyCallback: function() {
 
-    if (!this.controlsDisabled) {
-      this.player.leftArmVelocity -= 50 * this.game.time.physicsElapsed;
+    if (this.playerReady) {
+      if (!this.controlsDisabled) {
+        this.player.leftArmVelocity -= 50 * this.game.time.physicsElapsed;
+      }
+    } else {
+      this.getReady();
     }
 
   },
