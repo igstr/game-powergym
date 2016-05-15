@@ -8,6 +8,7 @@ PowerGym.States.Lvl4.prototype = {
     this.gameScale = PowerGym.GameData.scale;
     this.isMobile = !this.game.device.desktop || PowerGym.UserData.forceMobile;
 
+    this.ready = false;
     this.holdDelay = 100;
     this.repDuration = 1500;
     this.bgImage = this.add.image(0, 0, "bgLvl4");
@@ -29,52 +30,82 @@ PowerGym.States.Lvl4.prototype = {
 
     this.btnGoBack = this.add.button(0, 0, "btnGoBack", this.btnGoBackCallback, this);
 
+    // INFO WINDOW
+
+    // If first time playing this level show info window
+    if (PowerGym.UserData.Stats.overallLvl4Score == 0) {
+      this.time.events.add(1500, function() {
+
+        this.disableBtnGoBack();
+        this.menuInfo = new PowerGym.Prefabs.MenuLvlInfo(this, 4, this.menuInfoOkBtnCallback);
+        this.placeGameObject("menuInfo");
+
+      }, this);
+    } else {
+      this.addBtnUpCallback();
+      this.ready = true;
+    }
+
     this.putEverythingInPlace();
-
-    // INPUT
-
-    PowerGym.Keys.Spacebar.onUp.add(this.btnUpCallback, this);
 
   },
 
   update: function () {
 
-    var spacebar = PowerGym.Keys.Spacebar;
-    if (spacebar.isDown && spacebar.duration > this.holdDelay) {
-      if (!this.startedInterpolation) {
-        this.easeStartValue = this.player.repFrac;
-        this.easeStartTime = this.time.now;
-        this.easeDuration = this.repDuration * (1 - this.player.repFrac);
-        this.startedInterpolation = true;
-      }
-      var currentPercent = (this.time.now - this.easeStartTime)
-        / this.easeDuration;
-      if (currentPercent <= 1) {
-        var value = Phaser.Easing.Quartic.In(currentPercent);
-        this.player.repFrac = this.easeStartValue + value;
-      }
-    } else {
+    if (this.ready) {
+      var spacebar = PowerGym.Keys.Spacebar;
+      if (spacebar.isDown && spacebar.duration > this.holdDelay) {
+        if (!this.startedInterpolation) {
+          this.easeStartValue = this.player.repFrac;
+          this.easeStartTime = this.time.now;
+          this.easeDuration = this.repDuration * (1 - this.player.repFrac);
+          this.startedInterpolation = true;
+        }
+        var currentPercent = (this.time.now - this.easeStartTime)
+          / this.easeDuration;
+        if (currentPercent <= 1) {
+          var value = Phaser.Easing.Quartic.In(currentPercent);
+          this.player.repFrac = this.easeStartValue + value;
+        }
+      } else {
 
-      this.startedInterpolation = false;
+        this.startedInterpolation = false;
 
-      if (this.player.repFrac > 0.05) {
-        this.player.repFrac += this.growingWeight * this.time.physicsElapsed;
+        if (this.player.repFrac > 0.05) {
+          this.player.repFrac += this.growingWeight * this.time.physicsElapsed;
+        }
+
       }
 
+      if (this.reachedRepEnd && this.player.repFrac < 0.1) {
+        this.repsCount++;
+        this.updateRepsCountText();
+        this.reachedRepEnd = false;
+      } else if (this.player.repFrac > 0.85) {
+        this.reachedRepEnd = true;
+      }
+
+      if (!this.player.flattened && this.player.repFrac >= 1) {
+        this.player.flatten();
+        this.endState();
+      }
     }
 
-    if (this.reachedRepEnd && this.player.repFrac < 0.1) {
-      this.repsCount++;
-      this.updateRepsCountText();
-      this.reachedRepEnd = false;
-    } else if (this.player.repFrac > 0.85) {
-      this.reachedRepEnd = true;
-    }
+  },
 
-    if (!this.player.flattened && this.player.repFrac >= 1) {
-      this.player.flatten();
-      this.endState();
-    }
+  enableBtnGoBack: function() {
+
+    this.btnGoBack.onInputUp.add(this.btnGoBackCallback, this);
+    this.btnGoBack.freezeFrames = false;
+    this.btnGoBack.input.useHandCursor = true;
+
+  },
+
+  disableBtnGoBack: function() {
+
+    this.btnGoBack.onInputUp.remove(this.btnGoBackCallback, this);
+    this.btnGoBack.freezeFrames = true;
+    this.btnGoBack.input.useHandCursor = false;
 
   },
 
@@ -158,6 +189,13 @@ PowerGym.States.Lvl4.prototype = {
         this.menuLvlStats.window.y = this.game.height / 2
           - this.menuLvlStats.window.height / 2;
       break;
+      case "menuInfo":
+        this.menuInfo.window.scale.set(this.gameScale);
+        this.menuInfo.window.x = this.game.width / 2
+          - this.menuInfo.window.width / 2;
+        this.menuInfo.window.y = this.game.height / 2
+          - this.menuInfo.window.height / 2;
+        break;
       default:
     }
 
@@ -175,6 +213,9 @@ PowerGym.States.Lvl4.prototype = {
     var gameObjects = ["bg", "btnGoBack", "player", "repsCountText"];
     if (this.menuLvlStats) {
       gameObjects.push("menuLvlStats");
+    }
+    if (this.menuInfo) {
+      gameObjects.push("menuInfo");
     }
     for (var i = 0, l = gameObjects.length; i < l; i++) {
       this.placeGameObject(gameObjects[i]);
@@ -202,6 +243,25 @@ PowerGym.States.Lvl4.prototype = {
       this.player.repFrac -= 0.2;
       this.totalClicks++;
     }
+
+  },
+
+  addBtnUpCallback: function() {
+
+    PowerGym.Keys.Spacebar.onUp.add(this.btnUpCallback, this);
+
+  },
+
+  menuInfoOkBtnCallback: function() {
+
+    this.menuInfo.destroy();
+    this.menuInfo = null;
+
+    this.enableBtnGoBack();
+    this.putEverythingInPlace();
+
+    this.addBtnUpCallback();
+    this.ready = true;
 
   }
 

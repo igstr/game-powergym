@@ -94,6 +94,8 @@ PowerGym.States.Preloader.prototype = {
     this.load.image("lvl1Info", "assets/menus/lvl_info/lvl1.png");
     this.load.image("lvl2Info", "assets/menus/lvl_info/lvl2.png");
     this.load.image("lvl3Info", "assets/menus/lvl_info/lvl3.png");
+    this.load.image("lvl4Info", "assets/menus/lvl_info/lvl4.png");
+    this.load.image("lvl4InfoMobile", "assets/menus/lvl_info/lvl4-mobile.png");
 
     // Backgrounds
     this.load.image("bgMainMenu", "assets/images/bg-main_menu.png");
