@@ -43,7 +43,7 @@ var PowerGym = {
 
       },
 
-      forceMobile: true,
+      forceMobile: false,
 
       playerProgress: {
 

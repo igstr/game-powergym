@@ -1,6 +1,6 @@
 {
-  "name": "PowerGym",
-  "description": "The gym simulation game",
+  "name": "powergym",
+  "description": "The gym simulation game.",
   "main": "index.html",
   "moduleType": [],
   "authors": [

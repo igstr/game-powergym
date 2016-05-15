@@ -1,7 +1,7 @@
 {
   "name": "powergym",
   "version": "1.0.0",
-  "description": "Gym simulation game",
+  "description": "The gym simulation game.",
   "main": "Gruntfile.js",
   "directories": {
     "test": "tests"
