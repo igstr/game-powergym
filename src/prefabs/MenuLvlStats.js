@@ -135,6 +135,10 @@ PowerGym.Prefabs.MenuLvlStats = function(game, nextCallback, params, maxPoints) 
     this.skipCurrentLine();
   }, this);
 
+  PowerGym.Keys.Spacebar.onDown.add(function() {
+    this.skipCurrentLine();
+  }, this);
+
 };
 
 PowerGym.Prefabs.MenuLvlStats.prototype = {

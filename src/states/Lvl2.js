@@ -370,12 +370,6 @@ PowerGym.States.Lvl2.prototype = {
       }, stats, 4000);
       this.placeGameObject("menuLvlStats");
 
-      PowerGym.Keys.MouseL.onDown.add(function() {
-        this.menuLvlStats.skipCurrentLine();
-      }, this);
-      PowerGym.Keys.Spacebar.onDown.add(function(){
-        this.menuLvlStats.skipCurrentLine();
-      }, this);
     }, this);
 
   },

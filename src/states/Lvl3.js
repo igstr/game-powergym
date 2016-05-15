@@ -221,20 +221,17 @@ PowerGym.States.Lvl3.prototype = {
       {
         name: "Time played (s)",
         amount: Math.round(this.playTime / 100) / 10,
-        multiplier: 10,
-        units: "s"
+        multiplier: 10
       },
       {
         name: "Max Speed (c/s)",
         amount: Math.round(this.maxCps * 100) / 100,
-        multiplier: 10,
-        units: "c/s"
+        multiplier: 10
       },
       {
         name: "Avg speed (c/s)",
         amount: Math.round(this.avgCps * 100) / 100,
-        multiplier: 10,
-        units: "c/s"
+        multiplier: 10
       },
       {
         name: "Total Clicks",
@@ -265,10 +262,6 @@ PowerGym.States.Lvl3.prototype = {
 
       this.menuLvlStats._windowSprite.inputEnabled = true;
       this.menuLvlStats._windowSprite.events.onInputDown.add(function() {
-        this.menuLvlStats.skipCurrentLine();
-      }, this);
-
-      PowerGym.Keys.Spacebar.onDown.add(function() {
         this.menuLvlStats.skipCurrentLine();
       }, this);
 
