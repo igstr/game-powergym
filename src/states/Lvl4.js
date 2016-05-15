@@ -9,7 +9,7 @@ PowerGym.States.Lvl4.prototype = {
     this.isMobile = !this.game.device.desktop || PowerGym.UserData.forceMobile;
 
     this.ready = false;
-    this.holdDelay = 100;
+    this.holdDelay = 250;
     this.repDuration = 1500;
     this.bgImage = this.add.image(0, 0, "bgLvl4");
     this.growingWeight = 0.2;
@@ -53,8 +53,15 @@ PowerGym.States.Lvl4.prototype = {
   update: function () {
 
     if (this.ready) {
-      var spacebar = PowerGym.Keys.Spacebar;
-      if (spacebar.isDown && spacebar.duration > this.holdDelay) {
+
+      var spacebar = PowerGym.Keys.Spacebar
+        , activePointer = this.input.activePointer.id
+        , bgInput = this.bgImage.input;
+
+      if ((spacebar.isDown && spacebar.duration > this.holdDelay)
+          || (bgInput.pointerDown(activePointer)
+            && !bgInput.justPressed(activePointer, this.holdDelay))
+      ) {
         if (!this.startedInterpolation) {
           this.easeStartValue = this.player.repFrac;
           this.easeStartTime = this.time.now;
@@ -121,6 +128,7 @@ PowerGym.States.Lvl4.prototype = {
     this.btnGoBack.destroy();
 
     PowerGym.Keys.Spacebar.onUp.remove(this.btnUpCallback, this);
+    this.bgImage.events.onInputUp.remove(this.btnUpCallback, this);
 
     var stats = [
       {
@@ -237,9 +245,19 @@ PowerGym.States.Lvl4.prototype = {
 
   },
 
-  btnUpCallback: function() {
+  btnUpCallback: function(obj) {
 
-    if (PowerGym.Keys.Spacebar.duration < this.holdDelay) {
+    // Checking if click was down lesser than delay
+    var justReleased;
+    if (obj instanceof Phaser.Key) {
+      justReleased = obj.duration < this.holdDelay;
+    } else if (obj instanceof Phaser.Image) {
+      var activePointer = this.input.activePointer.id
+        , downDuration = obj.input._pointerData[activePointer].downDuration;
+      justReleased = downDuration < this.holdDelay;
+    }
+
+    if (justReleased) {
       this.player.repFrac -= 0.2;
       this.totalClicks++;
     }
@@ -249,6 +267,8 @@ PowerGym.States.Lvl4.prototype = {
   addBtnUpCallback: function() {
 
     PowerGym.Keys.Spacebar.onUp.add(this.btnUpCallback, this);
+    this.bgImage.inputEnabled = true;
+    this.bgImage.events.onInputUp.add(this.btnUpCallback, this);
 
   },
 
