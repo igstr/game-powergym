@@ -304,13 +304,6 @@ PowerGym.States.Lvl2.prototype = {
 
   },
 
-  shutdown: function() {
-
-    this.grOnScreenArrows.destroy();
-    this.grOnScreenArrows = null;
-
-  },
-
   render: function() {
 
     if (PowerGym.DEBUG_MODE) {
@@ -330,7 +323,10 @@ PowerGym.States.Lvl2.prototype = {
 
     // No comming back
     this.btnGoBack.destroy();
+
+    // Destroy on screen buttons
     this.grOnScreenArrows.destroy();
+    this.grOnScreenArrows = null;
 
     var stats = [
       {
