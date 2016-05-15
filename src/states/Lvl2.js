@@ -54,9 +54,8 @@ PowerGym.States.Lvl2.prototype = {
 
     this.grOnScreenArrows = this.add.group(this.world, "onScreenArrowButtons");
     var onScreenArrowMargin = 5;
-    this.onScreenArrowUpLeft = this.add.sprite(0, 0, "btnArrow", 0, this.grOnScreenArrows);
+    this.onScreenArrowUpLeft = this.add.sprite(0, 0, "btnW", 0, this.grOnScreenArrows);
     this.onScreenArrowUpLeft.anchor.setTo(0.5, 0.5);
-    this.onScreenArrowUpLeft.rotation = Math.PI / 2;
     this.onScreenArrowUpLeft.inputEnabled = true;
 
     this.onScreenArrowUpRight = this.add.sprite(0, 0, "btnArrow", 0, this.grOnScreenArrows);
