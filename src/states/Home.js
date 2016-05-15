@@ -63,14 +63,14 @@ PowerGym.States.Home.prototype = {
       PowerGym.UserData.playerProgress.shorts += scaleAmount / 4;
     }
     if (typeof scores.lvl4 != "undefined" && scores.lvl4 != 0) {
-      var scaleAmount = scores.lvl4 / 4000;
+      var scaleAmount = scores.lvl4 / 8000;
       this.game.time.events.add(1000, function() {
-        this.player.enlargeMuscleByAmount("head", scaleAmount);
+        this.player.enlargeMuscleByAmount("sixPack", scaleAmount);
       }, this);
       PowerGym.UserData.Stats.overallLvl4Score += scores.lvl4;
       PowerGym.UserData.Stats.overallScore += scores.lvl4;
       scores.lvl4 = 0;
-      PowerGym.UserData.playerProgress.head += scaleAmount;
+      PowerGym.UserData.playerProgress.sixPack += scaleAmount;
     }
 
     // Save scores to storage

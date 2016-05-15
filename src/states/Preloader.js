@@ -37,6 +37,7 @@ PowerGym.States.Preloader.prototype = {
     this.load.spritesheet("playerHomeTorso", "assets/sprites/home/player/torso80x165.png", 80, 165);
     this.load.image("playerHomeShorts", "assets/sprites/home/player/shorts.png");
     this.load.image("playerHomeFace", "assets/sprites/home/player/face.png");
+    this.load.image("playerHomeSixPack", "assets/sprites/home/player/six_pack.png");
 
     this.load.image("playerLvl1Body", "assets/sprites/lvl1/player/body.png");
     this.load.image("playerLvl1Head", "assets/sprites/lvl1/player/head.png");
@@ -58,6 +59,8 @@ PowerGym.States.Preloader.prototype = {
 
     this.load.spritesheet("playerLvl3Run", "assets/sprites/lvl3/player/run200x320.png", 200, 320);
     this.load.spritesheet("playerLvl3Falloff", "assets/sprites/lvl3/player/falloff700x340.png", 700, 340);
+
+    this.load.spritesheet("playerLvl4", "assets/sprites/lvl4/player500x310.png", 500, 310);
 
     // Icons
     this.load.image("whiteArrow", "assets/sprites/arrow.png");
@@ -98,6 +101,7 @@ PowerGym.States.Preloader.prototype = {
     this.load.image("bgLvl1", "assets/sprites/lvl1/bg.png");
     this.load.image("bgLvl2", "assets/sprites/lvl2/bg.png");
     this.load.image("bgLvl3", "assets/sprites/lvl3/bg.png");
+    this.load.image("bgLvl4", "assets/sprites/lvl4/bg.png");
 
     this.load.spritesheet("treadmillTrack", "assets/sprites/lvl3/treadmill_track500x75.png", 500, 75);
 

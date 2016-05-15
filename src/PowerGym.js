@@ -51,7 +51,8 @@ var PowerGym = {
           arms: 1,
           legs: 1,
           head: 1,
-          shorts: 1
+          shorts: 1,
+          sixPack: 1
 
       }
     },

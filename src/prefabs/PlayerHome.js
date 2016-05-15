@@ -9,7 +9,8 @@ PowerGym.Prefabs.PlayerHome = function(game, x, y, scaleParams) {
       arms: 1,
       legs: 1,
       head: 1,
-      shorts: 1
+      shorts: 1,
+      sixPack: 1
     };
   }
 
@@ -28,6 +29,11 @@ PowerGym.Prefabs.PlayerHome = function(game, x, y, scaleParams) {
   this._torso = game.add.sprite(73, 155, "playerHomeTorso", 0, this.body);
   this._torso.anchor.set(0.5);
   this._torso.scale.x = scaleParams.torso;
+
+  this._sixPack = game.add.sprite(80, 171, "playerHomeSixPack", 0, this.body);
+  this._sixPack.anchor.set(0.5);
+  this._sixPack.scale.set(this.getSixPackScale(scaleParams.sixPack));
+  this._sixPack.alpha = this.getSixPackAlpha(scaleParams.sixPack);
 
   this._rightArm = game.add.sprite(41, 84, "playerHomeRightArm", 0, this.body);
   this._rightArm.anchor.set(0.8, 0);
@@ -59,71 +65,101 @@ PowerGym.Prefabs.PlayerHome = function(game, x, y, scaleParams) {
 
 };
 
-PowerGym.Prefabs.PlayerHome.prototype.update = function() { };
+PowerGym.Prefabs.PlayerHome.prototype = {
 
-PowerGym.Prefabs.PlayerHome.prototype.scaleEverythingUp = function() {
+  update: function() {},
 
-  var notToScale = ["playerHomeHead", "playerHomeShorts", "playerHomeFace"];
+  getSixPackAlpha: function(progress) {
 
-  this.body.forEach(function(item) {
-    if (notToScale.indexOf(item.key) === -1) {
-      item.scale.x += 0.1;
+    return Math.min(1, progress - 1);
+
+  },
+
+  getSixPackScale: function(progress) {
+
+    return 1 + progress / 20;
+
+  },
+
+  scaleEverythingUp: function() {
+
+    var notToScale = ["playerHomeHead", "playerHomeShorts", "playerHomeFace"];
+
+    this.body.forEach(function(item) {
+      if (notToScale.indexOf(item.key) === -1) {
+        item.scale.x += 0.1;
+      }
+    });
+
+  },
+
+
+  scaleEverythingDown: function() {
+
+    var notToScale = ["playerHomeHead", "playerHomeShorts", "playerHomeFace"];
+
+    this.body.forEach(function(item) {
+      if (notToScale.indexOf(item.key) === -1) {
+        item.scale.x -= 0.1;
+      }
+    });
+
+  },
+
+  enlargeMuscleByAmount: function(muscle, amount) {
+
+    var playEnlargeAnim = function(muscle, amount) {
+
+      var enlargeTo = muscle.scale.x + amount;
+
+      var enlargeTween = this.game.tweens.create(muscle.scale);
+      enlargeTween.to({x: enlargeTo}, 300, Phaser.Easing.Elastic.Out, true);
+
+    };
+
+    switch (muscle) {
+      case "torso":
+        playEnlargeAnim.call(this, this._torso, amount);
+        break;
+      case "arms":
+        playEnlargeAnim.call(this, this._leftArm, amount);
+        playEnlargeAnim.call(this, this._rightArm, amount);
+        break;
+      case "legs":
+        playEnlargeAnim.call(this, this._leftLeg, amount);
+        playEnlargeAnim.call(this, this._rightLeg, amount);
+        break;
+      case "shorts":
+        playEnlargeAnim.call(this, this._shorts, amount);
+        break;
+      case "head":
+        playEnlargeAnim.call(this, this._headShape, amount);
+        break;
+      case "sixPack":
+        var newProgress = PowerGym.UserData.playerProgress.sixPack + amount,
+            newScale = this.getSixPackScale(newProgress),
+            newAlpha = this.getSixPackAlpha(newProgress);
+
+        var enlargeTween = this.game.tweens.create(this._sixPack.scale);
+        enlargeTween.to({x: newScale, y: newScale}, 300, Phaser.Easing.Elastic.Out, true);
+        var alphaTween = this.game.tweens.create(this._sixPack);
+        alphaTween.to({alpha: newAlpha}, 300, Phaser.Easing.Elastic.Out, true);
+        break;
+      default:
     }
-  });
 
-}
+  },
 
-PowerGym.Prefabs.PlayerHome.prototype.scaleEverythingDown = function() {
+  resetMuscles: function(scales) {
 
-  var notToScale = ["playerHomeHead", "playerHomeShorts", "playerHomeFace"];
+    this.body.forEach(function(item) {
+      item.scale.x = 1;
+      if (item.key == "playerHomeSixPack") {
+        item.alpha = 0;
+      }
+    }, this)
 
-  this.body.forEach(function(item) {
-    if (notToScale.indexOf(item.key) === -1) {
-      item.scale.x -= 0.1;
-    }
-  });
-
-}
-
-PowerGym.Prefabs.PlayerHome.prototype.enlargeMuscleByAmount = function(muscle, amount) {
-
-  var playEnlargeAnim = function(muscle, amount) {
-
-    var muscleScale = muscle.scale,
-        enlargeTo = muscleScale.x + amount;
-
-    var enlargeTween = this.game.tweens.create(muscleScale);
-    enlargeTween.to({x: enlargeTo}, 300, Phaser.Easing.Elastic.Out, true);
-
-  };
-
-  switch (muscle) {
-    case "torso":
-      playEnlargeAnim.call(this, this._torso, amount);
-      break;
-    case "arms":
-      playEnlargeAnim.call(this, this._leftArm, amount);
-      playEnlargeAnim.call(this, this._rightArm, amount);
-      break;
-    case "legs":
-      playEnlargeAnim.call(this, this._leftLeg, amount);
-      playEnlargeAnim.call(this, this._rightLeg, amount);
-      break;
-    case "shorts":
-      playEnlargeAnim.call(this, this._shorts, amount);
-      break;
-    case "head":
-      playEnlargeAnim.call(this, this._headShape, amount);
-      break;
-    default:
   }
 
 }
 
-PowerGym.Prefabs.PlayerHome.prototype.resetMuscles = function(scales) {
-
-  this.body.forEach(function(item) {
-    item.scale.x = 1;
-  }, this)
-
-}
