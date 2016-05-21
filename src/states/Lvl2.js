@@ -315,6 +315,7 @@ PowerGym.States.Lvl2.prototype = {
       this.game.debug.text("fails: " + this.failCounter, 8, 96);
       this.game.debug.text("left arm bottom: " + this.leftArmReachedRepBottom, 8, 112);
       this.game.debug.text("right arm bottom: " + this.rightArmReachedRepBottom, 8, 128);
+      this.game.debug.text("fps: " + this.game.time.fps, 8, 144);
     }
 
   },

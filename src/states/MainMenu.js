@@ -91,7 +91,13 @@ PowerGym.States.MainMenu.prototype = {
 
   },
 
-  render: function() { },
+  render: function() {
+
+    if (PowerGym.DEBUG_MODE) {
+      this.game.debug.text("fps: " + this.game.time.fps, 8, 16);
+    }
+
+  },
 
   btnPlayCallback: function() {
 

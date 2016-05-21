@@ -47,6 +47,11 @@ PowerGym.Boot.prototype = {
     // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     // this.scale.setMinMax(320, 240, 800, 600);
 
+    // Enabling this for fps monitoring
+    if (PowerGym.DEBUG_MODE) {
+      this.game.time.advancedTiming = true;
+    }
+
     // Adding game states
     this.state.add("Preloader", PowerGym.States.Preloader);
     this.state.add("MainMenu", PowerGym.States.MainMenu);

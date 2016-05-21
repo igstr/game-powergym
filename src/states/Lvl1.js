@@ -528,6 +528,7 @@ PowerGym.States.Lvl1.prototype = {
       this.game.debug.text("unbalance amplifier: " + this.unbalanceAmplifier, 32, 112);
       this.game.debug.text("player health: " + this.player.health, 32, 128);
       this.game.debug.text("player health step: " + this.playerHealthStep, 32, 144);
+      this.game.debug.text("fps: " + this.game.time.fps, 32, 160);
     }
 
   },

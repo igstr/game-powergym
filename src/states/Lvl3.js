@@ -399,6 +399,7 @@ PowerGym.States.Lvl3.prototype = {
       this.game.debug.text("player world pos: " + this.player.bodySprite.world, 16, 80);
       this.game.debug.text("player not world pos: " + this.playerPosWorld, 16, 96);
       this.game.debug.text("total clicks: " + this.totalClicks, 16, 112);
+      this.game.debug.text("fps: " + this.game.time.fps, 16, 128);
     }
 
   },

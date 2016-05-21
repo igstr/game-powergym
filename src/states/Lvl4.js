@@ -234,7 +234,8 @@ PowerGym.States.Lvl4.prototype = {
   render: function() {
 
     if (PowerGym.DEBUG_MODE) {
-      this.game.debug.text("player rep frac: " + this.player.repFrac, 32, 16);
+      this.game.debug.text("fps: " + this.game.time.fps, 8, 16);
+      this.game.debug.text("player rep frac: " + this.player.repFrac, 8, 32);
     }
 
   },

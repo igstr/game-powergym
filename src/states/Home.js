@@ -226,9 +226,7 @@ PowerGym.States.Home.prototype = {
   render: function() {
 
     if (PowerGym.DEBUG_MODE) {
-      // this.game.debug.text("aspect ratio: " + this.game.scale.aspectRatio, 32, 16);
-      // this.game.debug.text("source aspect ratio: " + this.game.scale.sourceAspectRatio, 32, 32);
-      // this.game.debug.text("aspect scale factor: " + this.game.scale.scaleFactor, 32, 48);
+      this.game.debug.text("fps: " + this.game.time.fps, 8, 16);
     }
 
   },
