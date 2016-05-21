@@ -1,11 +1,4 @@
-components/jquery
-components/phaser/build
-components/phaser/docs
-components/phaser/resources
-components/phaser/tasks
-components/phaser/typescript
-components/grunt-contrib-uglify
-
+components
 node_modules
 
 build
