@@ -1,0 +1,40 @@
+{
+"frames": {
+	"leftArm0": {
+		"frame": {"x":0, "y":0, "w":66, "h":144},
+		"spriteSourceSize": {"x":0,"y":0,"w":66,"h":144},
+		"sourceSize": {"w":66,"h":144}
+	},
+	"leftArm1": {
+		"frame": {"x":0, "y":144, "w":66, "h":144},
+		"spriteSourceSize": {"x":0,"y":0,"w":66,"h":144},
+		"sourceSize": {"w":66,"h":144}
+	},
+	"leftArm2": {
+		"frame": {"x":66, "y":0, "w":66, "h":144},
+		"spriteSourceSize": {"x":0,"y":0,"w":66,"h":144},
+		"sourceSize": {"w":66,"h":144}
+	},
+	"rightArm0": {
+		"frame": {"x":192, "y":0, "w":63, "h":147},
+		"spriteSourceSize": {"x":0,"y":0,"w":63,"h":147},
+		"sourceSize": {"w":63,"h":147}
+	},
+	"rightArm1": {
+		"frame": {"x":129, "y":144, "w":63, "h":147},
+		"spriteSourceSize": {"x":0,"y":0,"w":63,"h":147},
+		"sourceSize": {"w":63,"h":147}
+	},
+	"rightArm2": {
+		"frame": {"x":66, "y":144, "w":63, "h":147},
+		"spriteSourceSize": {"x":0,"y":0,"w":63,"h":147},
+		"sourceSize": {"w":63,"h":147}
+	}
+
+},
+"meta": {
+	"image": "arms-atlas.png",
+	"size": {"w": 255, "h": 291},
+	"scale": "1"
+}
+}

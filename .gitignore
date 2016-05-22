@@ -2,7 +2,14 @@ components
 node_modules
 
 build
-assets
 tests
+
+# Assets working files
+*.psd
+*.kra
+
+# Backup files
+*~
+*.bak
 
 tags
