@@ -277,10 +277,12 @@ PowerGym.States.Lvl1.prototype = {
 
     PowerGym.Keys.Up.onDown.remove(this.pressUp, this);
     PowerGym.Keys.Down.onDown.remove(this.pressDown, this);
-    this.onScreenArrowDown.onInputDown.remove(this.pressDown, this);
-    this.onScreenArrowUp.onInputDown.remove(this.pressUp, this);
-    this.grOnScreenArrows.destroy();
-    this.grOnScreenArrows = null;
+    if (this.grOnScreenArrows) {
+      this.onScreenArrowDown.onInputDown.remove(this.pressDown, this);
+      this.onScreenArrowUp.onInputDown.remove(this.pressUp, this);
+      this.grOnScreenArrows.destroy();
+      this.grOnScreenArrows = null;
+    }
 
   },
 
@@ -509,14 +511,7 @@ PowerGym.States.Lvl1.prototype = {
 
   },
 
-  // switchMobileDesktop: function() { },
-
   render: function() {
-
-    // if (this.forceMobile != PowerGym.UserData.forceMobile) {
-    //   this.forceMobile = PowerGym.UserData.forceMobile;
-    //   this.switchMobileDesktop();
-    // }
 
     if (PowerGym.DEBUG_MODE) {
       this.game.debug.text("player balance: " + this.player.balance, 32, 16);

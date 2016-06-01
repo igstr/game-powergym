@@ -320,6 +320,16 @@ PowerGym.States.Lvl2.prototype = {
 
   },
 
+  shutdown: function() {
+
+    // Destroy on screen buttons
+    if (this.grOnScreenArrows) {
+      this.grOnScreenArrows.destroy();
+      this.grOnScreenArrows = null;
+    }
+
+  },
+
   endState: function(pointer) {
 
     // No comming back
