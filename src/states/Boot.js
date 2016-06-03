@@ -7,10 +7,12 @@ PowerGym.Boot.prototype = {
 
     //  Configuration
 
-    //  Unless you specifically know your game needs to support multi-touch I would recommend setting this to 1
-    this.input.maxPointers = 1;
+    //  Unless you specifically know your game needs to support multi-touch I
+    //  would recommend setting this to 1
+    this.input.maxPointers = 3;
 
-    //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
+    //  Phaser will automatically pause if the browser tab the game is in loses
+    //  focus. You can disable that here:
     this.stage.disableVisibilityChange = true;
 
     // Setting stage backgound to white instead of black
@@ -42,10 +44,6 @@ PowerGym.Boot.prototype = {
 
       }, this);
     }
-
-    // this.scale.scaleMode = Phaser.ScaleManager.NO_SCALE;
-    // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    // this.scale.setMinMax(320, 240, 800, 600);
 
     // Enabling this for fps monitoring
     if (PowerGym.DEBUG_MODE) {
@@ -87,16 +85,16 @@ PowerGym.Boot.prototype = {
 
   preload: function () {
 
-    //  Here we load the assets required for our preloader (in this case a background and a loading bar)
-    // this.load.image("preloaderBackground", "images/preloader_background.jpg");
-    // this.load.image("preloaderBar", "images/preloadr_bar.png");
+    //  Load assets required for our preloader
+    this.load.image("preloaderBar", "assets/images/preloader-bar.png");
+    this.load.image("preloaderBarBg", "assets/images/preloader-bar-bg.png");
 
   },
 
   create: function () {
 
-    //  By this point the preloader assets have loaded to the cache, we"ve set the game settings
-    //  So now let"s start the real preloader going
+    //  By this point the preloader assets have loaded to the cache. So now
+    //  let"s start the real preloader going
     this.state.start("Preloader");
   }
 
