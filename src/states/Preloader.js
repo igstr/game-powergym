@@ -15,7 +15,7 @@ PowerGym.States.Preloader.prototype = {
 
     // Texts
 
-    this.load.bitmapFont("carrierCommand", "assets/fonts/bitmapFonts/carrier_command.png", "assets/fonts/bitmapFonts/carrier_command.xml");
+    this.load.bitmapFont("carrierCommand", "assets/fonts/carrier_command.png", "assets/fonts/carrier_command.xml");
     this.load.image("gameTitleMainMenuBlack", "assets/images/title-main_menu-black.png")
     this.load.image("gameTitleMainMenuWhite", "assets/images/title-main_menu-white.png")
 
