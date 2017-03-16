@@ -11,11 +11,17 @@ module.exports = function(grunt) {
         src: ['src/PowerGym.js', 'src/**/*.js'],
         dest: 'build/<%= pkg.name %>.min.js'
       }
+    },
+    watch: {
+      src: {
+        files: ['src/**/*.js'],
+        tasks: ['default']
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('default', ['uglify']);
-
 };
