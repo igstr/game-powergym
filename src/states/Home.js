@@ -98,11 +98,7 @@ PowerGym.States.Home.prototype = {
       item.startFloat();
     });
 
-    // Button to force mobile mode
-    if (this.game.device.desktop) {
-      this.btnMobile = this.add.button(0, 0, "btnMobile", this.btnMobileCallback, this, 1, 0, 0, 0);
-      this.btnMobileOn = this.add.button(0, 0, "btnMobileOn", this.btnMobileCallback, this, 1, 0, 0, 0);
-    }
+    // Trash can button for resetting player progress
     this.btnBin = this.add.button(0, 0, "btnBin", this.btnBinCallback, this, 1, 0, 2, 0);
 
     this.putEverythingInPlace();
@@ -121,20 +117,9 @@ PowerGym.States.Home.prototype = {
     if (this.menuLvlOptions && this.menuLvlOptions.window.visible) {
       gameObjects.push("menuLvlOptions");
     }
-    if (this.game.device.desktop && !this.menuLvlOptions) {
-      gameObjects.push("btnMobile");
-    }
     for (var i = 0, l = gameObjects.length; i < l; i++) {
       this.placeGameObject(gameObjects[i]);
     }
-
-  },
-
-  btnMobileCallback: function() {
-
-    PowerGym.UserData.forceMobile = !PowerGym.UserData.forceMobile;
-    this.dataManager.save();
-    this.putEverythingInPlace();
 
   },
 
@@ -182,20 +167,6 @@ PowerGym.States.Home.prototype = {
           - this.grLvlBtns.width / 2;
         this.grLvlBtns.y = this.game.height / 2
           - this.grLvlBtns.height / 2;
-        break;
-      case "btnMobile":
-        this.btnMobile.scale.set(this.gameScale);
-        this.btnMobileOn.scale.set(this.gameScale);
-
-        var margin = 10 * this.gameScale,
-            y =  this.btnBin.top - this.btnMobile.height - margin;
-
-        this.btnMobile.x = margin;
-        this.btnMobile.y = y;
-        this.btnMobileOn.x = margin;
-        this.btnMobileOn.y = y;
-        this.btnMobileOn.visible = PowerGym.UserData.forceMobile;
-        this.btnMobile.visible = !PowerGym.UserData.forceMobile;
         break;
       case "btnBin":
         var margin = 10 * this.gameScale,
@@ -296,20 +267,6 @@ PowerGym.States.Home.prototype = {
 
     this.grLvlBtns.visible = false;
 
-    // If mobile button visible disable it
-    if (this.game.device.desktop) {
-      var button;
-      if (PowerGym.UserData.forceMobile) {
-        button = this.btnMobileOn;
-      } else {
-        button = this.btnMobile;
-      }
-      // button.visible = true;
-      button.onInputUp.remove(this.btnMobileCallback, this);
-      button.freezeFrames = true;
-      button.input.useHandCursor = false;
-    }
-
     // Disable bin button
     this.btnBin.onInputUp.remove(this.btnBinCallback, this);
     this.btnBin.freezeFrames = true;
@@ -320,20 +277,6 @@ PowerGym.States.Home.prototype = {
   enableStateBtns: function() {
 
     this.grLvlBtns.visible = true;
-
-    // If mobile button visible enable it
-    if (this.game.device.desktop) {
-      var button;
-      if (PowerGym.UserData.forceMobile) {
-        button = this.btnMobileOn;
-      } else {
-        button = this.btnMobile;
-      }
-      // button.visible = true;
-      button.onInputUp.add(this.btnMobileCallback, this);
-      button.freezeFrames = false;
-      button.input.useHandCursor = true;
-    }
 
     // Enable bin button
     this.btnBin.onInputUp.add(this.btnBinCallback, this);
