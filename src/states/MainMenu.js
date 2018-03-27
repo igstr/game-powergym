@@ -29,7 +29,7 @@ PowerGym.States.MainMenu.prototype = {
     this.btnPlay.startFloat();
 
 
-    this.copyrightText = this.game.add.bitmapText(0, 0, "carrierCommand", "A game by Ignas Strimaitis", 8);
+    this.copyrightText = this.game.add.bitmapText(0, 0, "carrierCommand", "A game by igstr", 8);
 
     this.putEverythingInPlace();
 

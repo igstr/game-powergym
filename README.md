@@ -19,6 +19,6 @@ Artwork and other assets: [CC BY-SA 4.0](https://creativecommons.org/licenses/by
 
 ## Credits
 
-Created by Ignas Strimaitis. Powered by [Phaser](http://phaser.io/).
-
 Font "[Carrier Command](https://fontstruct.com/fontstructions/show/667357/carrier_command)" by [Patrick Lauke (redux)](https://fontstruct.com/fontstructors/145/redux), available under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+
+Powered by [Phaser](http://phaser.io/).
